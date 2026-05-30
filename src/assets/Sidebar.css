@@ -1,0 +1,190 @@
+:root {
+  --sb-width: 260px;
+  --sb-collapsed: 78px;
+  --sb-bg: #071024;
+  --sb-accent: #00b4d8;
+  --sb-light: #90e0ef;
+}
+
+/* ================= WRAPPER ================= */
+.sb-wrap {
+  width: var(--sb-width);
+  height: 100vh;
+  background: linear-gradient(180deg, #071024, #0a1628);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sb-wrap.collapsed {
+  width: var(--sb-collapsed);
+}
+
+/* ================= BRAND ================= */
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  min-height: 70px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sb-brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--sb-accent), var(--sb-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sb-brand-title {
+  font-weight: 600;
+  color: #fff;
+}
+
+.sb-brand-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ================= NAV ================= */
+.sb-nav {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sb-section {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ================= LINK ================= */
+.sb-link {
+  position: relative; /* Anchor point for tooltip positioning */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.7);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sb-link:hover {
+  background: rgba(0, 180, 216, 0.12);
+  transform: translateX(3px);
+  color: #fff;
+}
+
+.sb-link.active {
+  background: rgba(0, 180, 216, 0.25);
+  border-left: 3px solid var(--sb-accent);
+  color: #fff;
+}
+
+/* ================= ICON ================= */
+.sb-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+/* ================= TEXT TRANSITIONS & COLLAPSE ================= */
+.sb-brand-text,
+.sb-label,
+.sb-footer-text,
+.sb-section {
+  white-space: nowrap; /* Prevents text elements from breaking onto multiple lines during contraction */
+  transition: opacity 0.2s ease;
+}
+
+.sb-wrap.collapsed .sb-label,
+.sb-wrap.collapsed .sb-brand-text,
+.sb-wrap.collapsed .sb-footer-text,
+.sb-wrap.collapsed .sb-section {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+/* ================= TOOLTIP ================= */
+.sb-tooltip {
+  position: absolute;
+  left: 65px; /* Offset spacing built relative to collapsed icon */
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--sb-accent);
+  color: #071024;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  z-index: 1050;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Show tooltip only when collapsed and hovered over a link */
+.sb-wrap.collapsed .sb-link:hover .sb-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(5px);
+}
+
+/* Hidden by default when sidebar is open */
+.sb-wrap:not(.collapsed) .sb-tooltip {
+  display: none;
+}
+
+/* ================= FOOTER ================= */
+.sb-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sb-avatar {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  background: var(--sb-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #000;
+}
+
+.sb-footer-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sb-footer-copy {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
