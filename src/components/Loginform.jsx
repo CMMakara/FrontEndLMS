@@ -6,13 +6,19 @@ function Loginform({
   header,
   footer
 }) {
-  const { handleLogin } = useUserAuth();
+  const { handleLogin, errors, setErrors, clearError} = useUserAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin(email , password)
+    setLoading(true);
+    const result = await handleLogin(email, password)
+    setLoading(false);
+    if (!result) {
+      return;
+    }
   };
 
   const styles = {
@@ -72,28 +78,37 @@ function Loginform({
 
               <form onSubmit={handleSubmit}>
                 {/* Email */}
-                
+
                 <div className="mb-3">
-                  <Input 
-                  label="Email"
-                  width="100%" 
-                  placeholder="Enter your email or Username"
-                  icon="bi bi-person"
-                  value={email}
-                  onChange={(e)=> setEmail(e.target.value)}
+                  <Input
+                    label="Email"
+                    width="100%"
+                    placeholder="Enter your email or Username"
+                    icon="bi bi-person"
+                    value={email}
+                    error={errors.emailOrUsername}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearError("emailOrUsername")
+                    }
+                    }
                   />
                 </div>
 
                 {/* Password */}
                 <div className="mb-3">
-                  <Input 
-                  label="Password"
-                  width="100%" 
-                  placeholder="Enter your password"
-                  icon="bi bi-lock-fill"
-                  type="password"
-                  value={password}
-                  onChange={(e)=> setPassword(e.target.value)}
+                  <Input
+                    label="Password"
+                    width="100%"
+                    placeholder="Enter your password"
+                    icon="bi bi-lock-fill"
+                    type="password"
+                    value={password}
+                    error={errors.password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      clearError("password")
+                    }}
                   />
                 </div>
 
@@ -126,10 +141,24 @@ function Loginform({
                 {/* Button */}
                 <button
                   type="submit"
-                  className="btn btn-lg w-100 text-white fw-semibold"
+                  className="btn btn-lg w-100 fw-semibold text-white d-flex justify-content-center align-items-center gap-2"
                   style={styles.primaryBg}
+                  disabled={loading}
                 >
-                  Sign In
+                  {loading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Sign In
+                    </>
+                  )}
                 </button>
                 {/* Footer */}
                 {footer}

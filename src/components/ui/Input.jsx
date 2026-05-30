@@ -104,11 +104,6 @@ const StyledWrapper = styled.div`
     border: 2px solid #dc3545 !important;
     background: #fff;
   }
-
-  .input-error:focus {
-    border: 2px solid #dc3545 !important;
-    box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.15);
-  }
 `;
 
 export default Input;
