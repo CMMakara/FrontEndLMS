@@ -67,6 +67,10 @@ const useCategory = (initialPage = 1, per_page = 5) => {
     try {
       const res = await createCategoryAPI(data)
       if (res.result === false) {
+        showToast(res?.data, "error");
+        return false;
+      }
+      if (res.result === false) {
         showToast(res.data, "error");
         return false;
       }
@@ -83,6 +87,10 @@ const useCategory = (initialPage = 1, per_page = 5) => {
   const fetchDeleteCategory = async (id) => {
     try {
       const res = await deleteCategoryAPI(id)
+      if (res.result === false) {
+        showToast(res?.data, "error");
+        return false;
+      }
       setCategory((prev) =>
         prev.filter((item) => item.id !== id)
       )

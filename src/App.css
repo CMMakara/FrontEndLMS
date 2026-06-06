@@ -152,3 +152,19 @@
   transform: scale(0.95);
   box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25) !important;
 }
+
+.author-card {
+  transition: all 0.2s ease;
+  border-radius: 14px;
+}
+
+.author-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.textarea {
+  min-height: 150px;
+  max-height: 200px;
+  resize: vertical;
+}
