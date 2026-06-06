@@ -5,9 +5,10 @@ import "../../../assets/Sidebar.css";
 const menuItems = [
   { to: "/admin", end: true, icon: "bi-speedometer2", label: "Dashboard" },
   { to: "/admin/books", icon: "bi-book", label: "Books" },
-  { to: "/admin/members", icon: "bi-people", label: "Members" },
-  { to: "/admin/borrow", icon: "bi-arrow-left-right", label: "Borrow" },
+  { to: "/admin/users", icon: "bi-people", label: "Users" },
   { to: "/admin/category", icon: "bi-collection-fill", label: "Category" },
+  { to: "/admin/authors", icon: "bi bi-person-badge", label: "Authors" },
+  { to: "/admin/publishers", icon: "bi bi-building", label: "Publishers" },
   { to: "/admin/reports", icon: "bi-bar-chart-line", label: "Reports" },
   { to: "/admin/settings", icon: "bi-gear", label: "Settings" },
 ];

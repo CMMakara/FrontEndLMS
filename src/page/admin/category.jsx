@@ -80,12 +80,9 @@ function category() {
 
   const columns = [
     {
-      header: "id",
-      render: (row) =>(
-        <span>
-          {row.id}
-        </span>
-      )
+      header: "No",
+      render: (row, index) =>
+        (page - 1) * 5 + index + 1
     },
     {
       header: "Category Name",
@@ -98,9 +95,9 @@ function category() {
     {
       header: "Action",
       className: "text-center",
-      cellClassName: "text-end",
+      cellClassName: "text-center",
       render: (row) => (
-        <div className="d-flex gap-2 justify-content-center">
+        <div className="d-flex justify-content-center gap-2">
           <button onClick={() => openModalEdit(row)}
             className="btn btn-sm btn-primary"
           >
@@ -150,6 +147,7 @@ function category() {
       <Table
         columns={columns}
         data={category}
+        hover={false}
       />
       {/* modal edit*/}
       <Modal 

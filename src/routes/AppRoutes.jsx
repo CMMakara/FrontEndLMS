@@ -11,6 +11,9 @@ import DashboardLibrarian from '../page/Librarian/DashboardLibrarian'
 import AdminLayout from '../layouts/AdminLayout'
 import Book from '../page/admin/Book'
 import Category from '../page/admin/category'
+import User from '../page/admin/Users'
+import Authors from '../page/admin/Authors'
+import Publishers from '../page/admin/Publishers'
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -39,6 +42,9 @@ function AppRoutes() {
           <Route path='/admin' element={<DashboardAdmin/>} />
           <Route path='/admin/books' element={<Book/>} />
           <Route path='/admin/category' element={<Category/>} />
+          <Route path='/admin/users' element={<User/>} />
+          <Route path='/admin/authors' element={<Authors/>} />
+          <Route path='/admin/publishers' element={<Publishers/>} />
         </Route>
         {/* route librarian */}
         <Route
