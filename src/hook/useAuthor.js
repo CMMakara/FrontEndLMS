@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { createAuthorAPI, deteleAuthorAPI, getAllAuthorAPI, updateAuthorAPI } from "../services/author"
+import { createAuthorAPI, deteleAuthorAPI, getAllAuthorAPI, updateAuthorAPI } from "../services/authorService"
 import { useToast } from '../context/ToastContext.jsx'
 const useAuthor = () =>{
   const [author , setAuthor] = useState([])
@@ -26,7 +26,6 @@ const useAuthor = () =>{
       }
       showToast('update information Author success' , 'success')
       return true
-      return res.data;
     } catch (error) {
       console.log(error)
     }
