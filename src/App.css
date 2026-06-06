@@ -168,3 +168,23 @@
   max-height: 200px;
   resize: vertical;
 }
+
+.row-actions {
+  opacity: 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+tr:hover .row-actions {
+  opacity: 1;
+}
+
+.row-actions button {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 6px;
+}
