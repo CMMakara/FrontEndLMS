@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { createCategoryAPI, deleteCategoryAPI, getAllCategory, updateCategoryAPI } from '../services/categoryService'
 import { useToast } from '../context/ToastContext.jsx'
 import { validateCategory } from '../validations/CategorySchema.js'
-const useCategory = (initialPage = 1, per_page = 5) => {
+const useCategory = (initialPage = 1, options = {}) => {
   const validate = (data) => {
     const errors = validateCategory(data);
     return errors;
   };
+  const { all = false, per_page = 5 } = options;
   const [category, setCategory] = useState([])
   const [page, setPage] = useState(initialPage)
   const [pagination, setPagination] = useState({})
@@ -16,7 +17,12 @@ const useCategory = (initialPage = 1, per_page = 5) => {
   const { showToast } = useToast()
   const fetchGetAllCategory = async (currentPage = page, currentSearch = search) => {
     try {
-      const res = await getAllCategory(currentPage, per_page, currentSearch)
+      const res = await getAllCategory({
+          page: currentPage,
+          per_page,
+          search: currentSearch,
+          all,
+        })
       const data = res.data || []
       setCategory(data)
       setPagination(res?.pagination || {})
@@ -100,7 +106,7 @@ const useCategory = (initialPage = 1, per_page = 5) => {
     }
   }
   useEffect(() => {
-    fetchGetAllCategory(page, search)
+    fetchGetAllCategory()
   }, [page, search])
 
   return {

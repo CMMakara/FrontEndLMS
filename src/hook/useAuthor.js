@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react"
 import { createAuthorAPI, deteleAuthorAPI, getAllAuthorAPI, updateAuthorAPI } from "../services/authorService"
 import { useToast } from '../context/ToastContext.jsx'
-const useAuthor = () =>{
+const useAuthor = (options= {}) =>{
+  const { all = false, per_page = 5 } = options;
   const [author , setAuthor] = useState([])
   const [sortBy , setSortby] = useState('asc')
   const [search, setSearch] = useState('')
   const { showToast } = useToast()
   const getAllAuthor = async (currentSortBy = sortBy ,currentSearch = search) =>{
     try {
-      const res = await getAllAuthorAPI(sortBy ,search)
+      const res = await getAllAuthorAPI({
+        sort_by: currentSortBy,
+        search: currentSearch,
+        all,
+        per_page,
+      })
       const data = res.data || []
       setAuthor(data)
       return true

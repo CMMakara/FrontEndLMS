@@ -1,19 +1,30 @@
 import api  from "./api";
 
-export const getAllAuthorAPI = async (sort_by , search = '') =>{
+export const getAllAuthorAPI = async ({
+  sort_by = "",
+  search = "",
+  all = false,
+  page = 1,
+  per_page = 100,
+} = {}) => {
   try {
-    let res = await api.get('/authors' ,{
-      params : {
-        sort_by,
-        search
-      }
-    })
-    return res.data
+    const params = {
+      search,
+      sort_by,
+      page,
+    };
+
+    if (!all) {
+      params.per_page = per_page;
+    }
+
+    const res = await api.get("/authors", { params });
+    return res.data;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw error;
   }
-}
+};
 
 export const updateAuthorAPI = async (id ,data) =>{
   try {
