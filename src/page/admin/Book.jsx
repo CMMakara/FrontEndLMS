@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useBooks from '../../hook/useBooks';
 import useAuthors from '../../hook/useAuthor'
 import useCategory from '../../hook/useCategory'
 import Card from '../../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
+import Modal from '../../components/ui/Modal'
 function Book() {
   const navigate = useNavigate()
-  const { books, getAllBooks } = useBooks();
-  const {author} = useAuthors();
-  const { category } = useCategory(1, {per_page : 10000 });
+  const { books, getAllBooks , deleteBook } = useBooks();
+  const { author } = useAuthors();
+  const { category } = useCategory(1, { per_page: 10000 });
+  const total = books.length;
+  const booksArray = books?.data || books || [];
+  const available = booksArray.filter(b => b.status === "available").length;
+  const unavailable = total - available;
+  const [isModal , setIsModal] = useState(false)
+  const [selectId , setSelectId] = useState(null)
+
+  const openModalDelete = (id) =>{
+    setIsModal(true)
+    setSelectId(id)
+  }
+  const handleDelete = async () =>{
+    if(!selectId){
+      return
+    }
+    await deleteBook(selectId)
+    setIsModal(false)
+    await getAllBooks()
+  }
+
   return (
     <div
-      className="container-fluid p-4"
+      className="container py-5"
       style={{
         background: '#f8fafc',
         minHeight: '100vh',
@@ -27,7 +48,7 @@ function Book() {
           <p className="text-muted">Overview of your library system</p>
         </div>
 
-        <button className="btn btn-dark px-4" onClick={()=> navigate('/admin/books/create')}>
+        <button className="btn btn-dark px-4" onClick={() => navigate('/admin/books/create')}>
           <i className="bi bi-plus-circle-fill me-2 text-white"></i>
           Add Book
         </button>
@@ -39,7 +60,7 @@ function Book() {
           <div className="card border-0 shadow-sm">
             <div className="card-body">
               <small className="text-muted">Total Books</small>
-              <h2 className="fw-bold mt-2">{books.length}</h2>
+              <h2 className="fw-bold mt-2 text-primary">{total}</h2>
             </div>
           </div>
         </div>
@@ -48,7 +69,7 @@ function Book() {
           <div className="card border-0 shadow-sm">
             <div className="card-body">
               <small className="text-muted">Authors</small>
-              <h2 className="fw-bold mt-2">{author.length}</h2>
+              <h2 className="fw-bold mt-2 text-secondary">{author.length}</h2>
             </div>
           </div>
         </div>
@@ -57,7 +78,7 @@ function Book() {
           <div className="card border-0 shadow-sm">
             <div className="card-body">
               <small className="text-muted">Categories</small>
-              <h2 className="fw-bold mt-2">{category.length}</h2>
+              <h2 className="fw-bold mt-2 text-info">{category.length}</h2>
             </div>
           </div>
         </div>
@@ -66,7 +87,7 @@ function Book() {
           <div className="card border-0 shadow-sm">
             <div className="card-body">
               <small className="text-muted">Available</small>
-              <h2 className="fw-bold mt-2 text-success">1,180</h2>
+              <h2 className="fw-bold mt-2 text-success">{available}</h2>
             </div>
           </div>
         </div>
@@ -101,7 +122,7 @@ function Book() {
                       >
                         {data.thumbnail ? (
                           <img
-                            src={data.thumbnail}
+                            src={`${import.meta.env.VITE_API_URL}/${data.thumbnail}`}
                             alt={data.book_title}
                             style={{
                               width: "100%",
@@ -182,7 +203,7 @@ function Book() {
 
                         <div className="col-6">
                           <div className="bg-light rounded p-3">
-                            <h5 className="fw-bold mb-0">
+                            <h5 className="fw-bold mb-0 text-primary">
                               {data.pages}
                             </h5>
                             <small>Pages</small>
@@ -191,7 +212,7 @@ function Book() {
 
                         <div className="col-6">
                           <div className="bg-light rounded p-3">
-                            <h5 className="fw-bold mb-0">
+                            <h5 className="fw-bold mb-0 text-danger-emphasis">
                               {data.total_copies}
                             </h5>
                             <small>Copies</small>
@@ -199,10 +220,17 @@ function Book() {
                         </div>
 
                         <div className="col-12">
-                          <button className="btn btn-primary w-100">
-                            <i className="bi bi-eye me-2"></i>
-                            View Details
-                          </button>
+                          <div className="d-flex gap-2">
+                            <button className="btn btn-warning w-100" onClick={() => navigate(`/admin/books/update/${data.id}`)}>
+                              <i className="bi bi-pencil me-2"></i>
+                              Edit
+                            </button>
+
+                            <button className="btn btn-danger w-100" onClick={()=> openModalDelete(data.id)}>
+                              <i className="bi bi-trash me-2"></i>
+                              Delete
+                            </button>
+                          </div>
                         </div>
 
                       </div>
@@ -219,6 +247,19 @@ function Book() {
           </div>
         )}
       </div>
+      {/* modal delete */}
+      <Modal
+        isOpen={isModal}
+        onClose={()=> setIsModal(false)}
+        title='conform Delete'
+        onSave={handleDelete}
+        btnColorSave='btn-danger'
+        children={
+          <div className='text-center mt-4'>
+            <h5>Do you want delete book ?</h5>
+          </div>
+        }
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import Select from "../../components/ui/Select";
 import Input from '../../components/ui/Input'
 import TextArea from '../../components/ui/Textarea'
@@ -7,7 +8,6 @@ import useAuthors from '../../hook/useAuthor'
 import usePublisher from '../../hook/usePublishers'
 import useBooks from "../../hook/useBooks";
 import { useNavigate } from "react-router-dom";
-
 const INITIAL_FORM = {
   category_id: "",
   author_id: "",
@@ -23,6 +23,7 @@ const INITIAL_FORM = {
   shelf_location: "",
   description: "",
   thumbnail: null,
+  status: ""
 };
 
 function Section({ icon, title, accent, children }) {
@@ -55,7 +56,8 @@ function Section({ icon, title, accent, children }) {
   );
 }
 
-export default function CreateBook() {
+function UpdateBook() {
+  const { id } = useParams()
   const [form, setForm] = useState(INITIAL_FORM);
   const [preview, setPreview] = useState(null);
   const [isDrag, setIsDrag] = useState(false);
@@ -63,27 +65,76 @@ export default function CreateBook() {
   const { category } = useCategory(1, { per_page: 1000 })
   const { author } = useAuthors(1, { per_page: 1000 })
   const { publishers } = usePublisher()
-  const { createBook, uploadImageBook } = useBooks()
+  const { getBooksById, updateBook, uploadImageBook } = useBooks()
   const navigate = useNavigate();
-  
+
+  useEffect(() => {
+    getBookByID()
+  }, [id])
+
+  const getBookByID = async () => {
+    const res = await getBooksById(id)
+    const data = res?.data;
+    if (!data) return;
+    setForm({
+      ...INITIAL_FORM,
+      category_id: data.category_id ?? "",
+      author_id: data.author_id ?? "",
+      publisher_id: data.publisher_id ?? "",
+      book_title: data.book_title ?? "",
+      isbn: data.isbn ?? "",
+      edition: data.edition ?? "",
+      language: data.language ?? "",
+      publish_year: data.publish_year ?? "",
+      pages: data.pages ?? "",
+      total_copies: data.total_copies ?? "",
+      available_copies: data.available_copies ?? "",
+      shelf_location: data.shelf_location ?? "",
+      description: data.description ?? "",
+      status: data.status ?? "",
+    });
+    const image = data?.thumbnail;
+
+    if (image && typeof image === "string" && image.trim()) {
+      const cleanBase = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      setPreview(
+        image.startsWith("http")
+          ? image
+          : `${cleanBase}/${image}`
+      );
+    }
+  }
 
   const setField = (key, value) => {
     setForm((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
-  /* handlers */
-  const handleChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const applyFile = (file) => {
     if (!file || !file.type.startsWith("image/")) return;
-    setForm((f) => ({ ...f, thumbnail: file }));
+
+    setForm((prev) => ({
+      ...prev,
+      thumbnail: file,
+    }));
+
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleFileInput = (e) => applyFile(e.target.files[0]);
+  const handleFileInput = (e) => {
+    const file = e.target.files[0];
+    applyFile(e.target.files[0]);
+    e.target.value = "";
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -92,22 +143,31 @@ export default function CreateBook() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const { thumbnail, ...bookData } = form;
+  const { thumbnail, ...formData } = form;
 
-    const res = await createBook(bookData);
-    if (!res) return;
-
-    const bookId = res?.data?.id || res?.id;
-
-    if (thumbnail) {
-      await uploadImageBook(bookId, thumbnail);
-    }
-    navigate("/admin/books");
+  const payload = {
+    ...formData,
+    category_id: form.category_id ? Number(form.category_id) : null,
+    author_id: form.author_id ? Number(form.author_id) : null,
+    publisher_id: form.publisher_id ? Number(form.publisher_id) : null,
+    publish_year: form.publish_year ? Number(form.publish_year) : null,
+    pages: form.pages ? Number(form.pages) : null,
+    total_copies: form.total_copies ? Number(form.total_copies) : null,
+    available_copies: form.available_copies ? Number(form.available_copies) : null,
   };
 
-  /* ── render ── */
+
+  const res = await updateBook(id, payload);
+  if (!res) return;
+
+  if (thumbnail instanceof File) {
+    await uploadImageBook(id, thumbnail);
+  }
+
+  navigate("/admin/books");
+};
   return (
     <div
       className="container-fluid py-4 px-4"
@@ -117,7 +177,7 @@ export default function CreateBook() {
       <div className="mb-4">
         <h2 className="fw-bold mb-1" style={{ fontSize: 22 }}>
           <i className="bi bi-journal-plus me-2 text-primary" />
-          Create Book
+          Update Book
         </h2>
         <p className="text-muted mb-0" style={{ fontSize: 14 }}>
           Fill in all required book information
@@ -143,6 +203,7 @@ export default function CreateBook() {
               />
 
               <div
+                className="cover-wrapper"
                 onClick={() => fileInputRef.current.click()}
                 onDragOver={(e) => { e.preventDefault(); setIsDrag(true); }}
                 onDragLeave={() => setIsDrag(false)}
@@ -376,6 +437,22 @@ export default function CreateBook() {
                       onChange={handleChange}
                     />
                   </div>
+                  <div className="mb-3">
+                    <Select
+                      label="Status"
+                      name="status"
+                      placeholder='Selete status'
+                      width='100%'
+                      value={form.status}
+                      onChange={(e) => setField("status", e.target.value)}
+                      options={[
+                        { value: "available", label: "🟢 Available" },
+                        { value: "unavailable", label: "🔴 Unavailable" },
+                        { value: "damaged", label: "🟠 Damaged" },
+                        { value: "archived", label: "⚫ Archived" },
+                      ]}
+                    />
+                  </div>
                 </Section>
               </div>
 
@@ -475,9 +552,10 @@ export default function CreateBook() {
                 }}
               >
                 <i className="bi bi-plus-circle me-2" />
-                Create book
+                Update book
               </button>
             </div>
+
           </form>
         </div>
       </div>
@@ -490,3 +568,5 @@ export default function CreateBook() {
     </div>
   );
 }
+
+export default UpdateBook
