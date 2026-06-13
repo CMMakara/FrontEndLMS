@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { createPublishersAPI, deletePublishersAPI, getAllPublishersAPI, updatePublishersAPI } from "../services/publishersService"
 import { useToast } from '../context/ToastContext.jsx'
 const usePublishers = () =>{
-  const [publishers , setPublishers] = useState({})
+  const [publishers , setPublishers] = useState([])
   const { showToast } = useToast()
   const getAllPublishers = async () =>{
     try {

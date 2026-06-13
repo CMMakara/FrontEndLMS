@@ -1,14 +1,16 @@
 import api  from "./api";
 
-export const getAllCategory = async (page= 1 , per_page = 10 , search = '') =>{
+export const getAllCategory = async ({page= 1 , per_page = 100 , search = '' ,all =false}) =>{
   try {
-    const res = await api.get('/category',{
-      params:{
-        page,
-        per_page,
-        search
-      }
-    })
+     const params = {
+      page,
+      search,
+    };
+
+    if (!all) {
+      params.per_page = per_page;
+    }
+    const res = await api.get('/category',{params})
     return res.data
   } catch (error) {
     console.log(error)

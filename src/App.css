@@ -188,3 +188,8 @@ tr:hover .row-actions {
   padding: 4px;
   border-radius: 6px;
 }
+
+.cover-wrapper:hover .cover-hover-overlay {
+  opacity: 1 !important;
+  pointer-events: auto;
+}

@@ -14,6 +14,8 @@ import Category from '../page/admin/category'
 import User from '../page/admin/Users'
 import Authors from '../page/admin/Authors'
 import Publishers from '../page/admin/Publishers'
+import CreateBook from '../page/admin/CreateBook'
+import UpdateBook from '../page/admin/UpdateBook'
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -41,6 +43,8 @@ function AppRoutes() {
         >
           <Route path='/admin' element={<DashboardAdmin/>} />
           <Route path='/admin/books' element={<Book/>} />
+          <Route path='/admin/books/create' element={<CreateBook/>} />
+          <Route path='/admin/books/update/:id' element={<UpdateBook/>} />
           <Route path='/admin/category' element={<Category/>} />
           <Route path='/admin/users' element={<User/>} />
           <Route path='/admin/authors' element={<Authors/>} />

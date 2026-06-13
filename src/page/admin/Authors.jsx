@@ -6,7 +6,7 @@ import Modal from '../../components/ui/Modal'
 import Textarea from '../../components/ui/Textarea';
 import { validateAuthor } from "../../validations/AuthorSchema";
 function Authors() {
-  const { author, search, setSearch, updateAuthor, getAllAuthor, deleteAuthor ,createAuthor } = useAuthor();
+  const { author, search, setSearch, updateAuthor, getAllAuthor, deleteAuthor ,createAuthor } = useAuthor(1, { per_page: 1000 });
   const [isModalEdit, setIsModalEdit] = useState(false)
   const [isModalDelete, setIsModalDelete] = useState(false)
   const [isModalCreate, setIsModalCreate] = useState(false)
