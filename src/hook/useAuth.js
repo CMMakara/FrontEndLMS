@@ -1,4 +1,4 @@
-import { loginUser } from "../services/authService";
+import { loginUser, logoutUserAPI } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { setAuth } from "../utils/auth";
 import { validateLogin } from "../validations/LoginSchema";
@@ -65,11 +65,27 @@ const useUserAuth = () => {
     }));
   };
 
+  const logout = async () => {
+    try {
+      await logoutUserAPI();
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      showToast("Logout successfully", "success");
+    } catch (error) {
+      console.log("Logout API failed:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      showToast("Logout failed, but session cleared", "warning");
+    } 
+  };
+
   return {
     handleLogin,
     errors,
     setErrors,
-    clearError
+    clearError,
+    logout
   };
 };
 

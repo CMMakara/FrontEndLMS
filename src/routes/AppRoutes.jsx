@@ -16,6 +16,7 @@ import Authors from '../page/admin/Authors'
 import Publishers from '../page/admin/Publishers'
 import CreateBook from '../page/admin/CreateBook'
 import UpdateBook from '../page/admin/UpdateBook'
+import ProfileAdmin from '../page/admin/ProfileAdmin'
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -49,6 +50,7 @@ function AppRoutes() {
           <Route path='/admin/users' element={<User/>} />
           <Route path='/admin/authors' element={<Authors/>} />
           <Route path='/admin/publishers' element={<Publishers/>} />
+          <Route path='/admin/profile' element={<ProfileAdmin/>} />
         </Route>
         {/* route librarian */}
         <Route

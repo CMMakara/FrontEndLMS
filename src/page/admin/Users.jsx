@@ -3,24 +3,74 @@ import Table from '../../components/ui/Table';
 import useUsers from '../../hook/useUsers';
 import Pagination from '../../components/ui/Pagination';
 import Card from '../../components/ui/Card';
-import Input from '../../components/ui/Input'
+import Input from '../../components/ui/Input';
+import Select from '../../components/ui/Select';
+import Modal from '../../components/ui/Modal';
 
 function User() {
-  const { users, page, pagination, setPage, order, setOrder ,search ,setSearch} = useUsers();
+  const {
+    users,
+    page,
+    pagination,
+    setPage,
+    order,
+    setOrder,
+    search,
+    setSearch,
+    createUser,
+    getAllUsers,
+  } = useUsers();
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isModal, setIsModal] = useState(false);
+  const [form, setForm] = useState({
+    full_name: '',
+    username: '',
+    email: '',
+    password: '',
+    role_id: '',
+  });
   const columns = [
     {
-      header: "No",
-      render: (row, index) =>
-        (page - 1) * 10 + index + 1
+      header: 'No',
+      render: (row, index) => (page - 1) * 10 + index + 1,
     },
     { header: 'Full Name', accessor: 'full_name' },
     { header: 'Username', accessor: 'username' },
     { header: 'Email', accessor: 'email' },
+    {
+      header: 'Role Name',
+      render: (row) => {
+        const colors = {
+          admin: 'bg-danger',
+          librarian: 'bg-primary',
+          member: 'bg-success',
+        };
+
+        return (
+          <span className={`badge ${colors[row.role_name?.toLowerCase()] || 'bg-secondary'}`}>
+            {row.role_name}
+          </span>
+        );
+      },
+    },
     { header: 'Phone', accessor: 'phone' },
     { header: 'Address', accessor: 'address' },
     { header: 'Gender', accessor: 'gender' },
-    { header: 'role Name', accessor: 'role_name' },
+    {
+      header: 'Is Verified',
+      render: (row) => {
+        const colors = {
+          1: 'bg-danger',
+          0: 'bg-success',
+        };
+
+        return (
+          <span className={`badge ${colors[row.is_verified] || 'bg-secondary'}`}>
+            {row.is_verified === 1 ? 'Verified' : 'Not Verified'}
+          </span>
+        );
+      },
+    },
     {
       header: 'Created At',
       render: (row) => {
@@ -29,13 +79,43 @@ function User() {
         return date.toLocaleDateString('en-GB');
       },
     },
+
   ];
   const getProfileImage = (user) => {
-    if (user?.profile_image == null) {
-      return "http://localhost:3000/uploads/profiles/default-profile.png";
+    const baseUrl = import.meta.env.VITE_API_URL;
+    // fallback image
+    const defaultImg = `${baseUrl}/profiles/default-profile.png`;
+
+    // no image case
+    if (
+      !user?.profile_image ||
+      user.profile_image === '/uploads/default-profile.png' ||
+      user.profile_image === '/uploads/profiles/default-profile.png'
+    ) {
+      return defaultImg;
     }
 
-    return `http://localhost:3000/uploads/${user.profile_image}`;
+    // clean path (avoid double slash)
+    const path = user.profile_image.startsWith('/')
+      ? user.profile_image.slice(1)
+      : user.profile_image;
+
+    return `${baseUrl}/${path}`;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleCreate = async () => {
+    let result = await createUser(form);
+    if (!result) return;
+    await getAllUsers();
+    setIsModal(false);
   };
 
   return (
@@ -68,24 +148,25 @@ function User() {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
-
-        <button className="btn btn-primary d-flex align-items-center gap-2">
+        <button
+          className="btn btn-primary d-flex align-items-center gap-2"
+          onClick={() => setIsModal(true)}
+        >
           <i className="bi bi-person-plus"></i>
           Create User
         </button>
 
         <div style={{ flex: 1, maxWidth: '320px' }}>
           <Input
-            icon='bi bi-search'
-            placeholder='search user'
+            icon="bi bi-search"
+            placeholder="search user"
             value={search}
-            onChange={(e) =>{
-              setSearch(e.target.value)
-              setPage(1)
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
             }}
           />
         </div>
-
       </div>
       <Table
         columns={columns}
@@ -137,12 +218,12 @@ function User() {
                 <div className="d-flex justify-content-between align-items-center">
                   <small className="text-muted">Status</small>
                   <span
-                    className={`badge ${selectedUser?.member_status === 'active'
+                    className={`badge ${selectedUser?.status === 'active'
                       ? 'bg-success'
                       : 'bg-secondary'
                       }`}
                   >
-                    {selectedUser?.member_status || 'unknown'}
+                    {selectedUser?.status || 'unknown'}
                   </span>
                 </div>
               }
@@ -165,7 +246,16 @@ function User() {
                 <small className="text-muted">@{selectedUser?.username}</small>
 
                 <div className="mt-2">
-                  <span className="badge bg-primary-subtle text-primary border">
+                  <span
+                    className={`badge ${selectedUser?.role_name?.toLowerCase() === 'admin'
+                      ? 'bg-danger'
+                      : selectedUser?.role_name?.toLowerCase() === 'librarian'
+                        ? 'bg-primary'
+                        : selectedUser?.role_name?.toLowerCase() === 'member'
+                          ? 'bg-success'
+                          : 'bg-secondary'
+                      }`}
+                  >
                     {selectedUser?.role_name}
                   </span>
                 </div>
@@ -181,13 +271,13 @@ function User() {
                   <div className="row">
                     <div className="col-6">
                       <small className="text-muted">Phone</small>
-                      <div>{selectedUser?.phone || '-'}</div>
+                      <div>{selectedUser?.phone || 'N/A'}</div>
                     </div>
 
                     <div className="col-6">
                       <small className="text-muted">Address</small>
                       <div className="text-truncate">
-                        {selectedUser?.address || '-'}
+                        {selectedUser?.address || 'N/A'}
                       </div>
                     </div>
                   </div>
@@ -197,6 +287,85 @@ function User() {
           </div>
         </div>
       )}
+
+      {/* modal create */}
+      <Modal
+        isOpen={isModal}
+        onClose={() => setIsModal(false)}
+        title="Create New User Account"
+        onSave={handleCreate}
+        saveText="Create"
+        btnColorSave="btn-success"
+        children={
+          <div>
+            <div className="mt-2">
+              <Input
+                label="Full Name"
+                width="100%"
+                icon="bi bi-person"
+                placeholder="Enter full name"
+                name="full_name"
+                value={form.full_name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="Username"
+                width="100%"
+                icon="bi bi-person-badge"
+                placeholder="Enter UserName"
+                name="username"
+                value={form.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="Email"
+                width="100%"
+                icon="bi bi-envelope"
+                placeholder="Enter email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="password"
+                width="100%"
+                icon="bi bi-lock"
+                placeholder="Enter password"
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2 mb-2">
+              <Select
+                label="Role"
+                width="100%"
+                placeholder="Select role"
+                name="role_id"
+                value={form.role_id}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    role_id: Number(e.target.value),
+                  }))
+                }
+                options={[
+                  { label: 'Admin', value: 3 },
+                  { label: 'Librarian', value: 2 },
+                  { label: 'User', value: 1 },
+                ]}
+              />
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }

@@ -253,6 +253,7 @@ function Book() {
         onClose={()=> setIsModal(false)}
         title='conform Delete'
         onSave={handleDelete}
+        saveText='Yes'
         btnColorSave='btn-danger'
         children={
           <div className='text-center mt-4'>

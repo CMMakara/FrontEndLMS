@@ -12,3 +12,12 @@ export const loginUser = async (data) => {
     throw error;
   }
 }
+
+export const logoutUserAPI = async () =>{
+  try {
+    await api.delete('/auth/logout')
+  } catch (error) {
+    console.log(error)
+    throw error;
+  }
+}
