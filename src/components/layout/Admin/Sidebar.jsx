@@ -7,10 +7,9 @@ const menuItems = [
   { to: "/admin/books", icon: "bi-book", label: "Books" },
   { to: "/admin/users", icon: "bi-people", label: "Users" },
   { to: "/admin/category", icon: "bi-collection-fill", label: "Category" },
-  { to: "/admin/authors", icon: "bi bi-person-badge", label: "Authors" },
-  { to: "/admin/publishers", icon: "bi bi-building", label: "Publishers" },
+  { to: "/admin/authors", icon: "bi-person-badge", label: "Authors" },
+  { to: "/admin/publishers", icon: "bi-building", label: "Publishers" },
   { to: "/admin/reports", icon: "bi-bar-chart-line", label: "Reports" },
-  { to: "/admin/settings", icon: "bi-gear", label: "Settings" },
 ];
 
 function Sidebar() {
@@ -55,16 +54,6 @@ function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      {/* Footer */}
-      <div className="sb-footer">
-        <div className="sb-avatar">A</div>
-
-        <div className="sb-footer-text">
-          <div className="sb-footer-name">Admin User</div>
-          <div className="sb-footer-copy">Super Admin</div>
-        </div>
-      </div>
     </div>
   );
 }

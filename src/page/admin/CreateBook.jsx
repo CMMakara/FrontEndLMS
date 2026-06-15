@@ -461,6 +461,7 @@ export default function CreateBook() {
                 type="button"
                 className="btn btn-light px-4"
                 style={{ fontSize: 13, borderRadius: 10 }}
+                onClick={()=> navigate("/admin/books")}
               >
                 Cancel
               </button>
