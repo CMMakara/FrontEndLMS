@@ -30,7 +30,6 @@ const useUser = (initialPage = 1, per_page = 10) =>{
   const createUser = async (data) =>{
     try {
       let res = await createUserAPI(data)
-      console.log(res)
       if(res?.result === false){
         showToast('Create user fail' , 'error')
         return false

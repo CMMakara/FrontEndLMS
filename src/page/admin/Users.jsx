@@ -6,7 +6,7 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
-
+import { validateCreateUser } from "../../validations/CreateUserSchema";
 function User() {
   const {
     users,
@@ -22,6 +22,7 @@ function User() {
   } = useUsers();
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModal, setIsModal] = useState(false);
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     full_name: '',
     username: '',
@@ -110,8 +111,29 @@ function User() {
       ...prev,
       [name]: value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "", // clear field error
+    }));
   };
+  const openModal = () => {
+    setForm({
+      full_name: '',
+      username: '',
+      email: '',
+      password: '',
+      role_id: 3,
+    });
+    setErrors({});
+    setIsModal(true);
+  }
   const handleCreate = async () => {
+    const errors = validateCreateUser(form, [1,2,3])
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return
+    }
     let result = await createUser(form);
     if (!result) return;
     await getAllUsers();
@@ -150,7 +172,7 @@ function User() {
       <div className="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
         <button
           className="btn btn-primary d-flex align-items-center gap-2"
-          onClick={() => setIsModal(true)}
+          onClick={openModal}
         >
           <i className="bi bi-person-plus"></i>
           Create User
@@ -306,6 +328,7 @@ function User() {
                 placeholder="Enter full name"
                 name="full_name"
                 value={form.full_name}
+                error={errors.full_name}
                 onChange={handleChange}
               />
             </div>
@@ -317,6 +340,7 @@ function User() {
                 placeholder="Enter UserName"
                 name="username"
                 value={form.username}
+                error={errors.username}
                 onChange={handleChange}
               />
             </div>
@@ -328,6 +352,7 @@ function User() {
                 placeholder="Enter email"
                 name="email"
                 value={form.email}
+                error={errors.email}
                 onChange={handleChange}
               />
             </div>
@@ -340,6 +365,7 @@ function User() {
                 type="password"
                 name="password"
                 value={form.password}
+                error={errors.password}
                 onChange={handleChange}
               />
             </div>
@@ -350,6 +376,7 @@ function User() {
                 placeholder="Select role"
                 name="role_id"
                 value={form.role_id}
+                error={errors.role_id}
                 onChange={(e) =>
                   setForm((prev) => ({
                     ...prev,

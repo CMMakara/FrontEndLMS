@@ -57,7 +57,8 @@ const useMember = ({ search = "", perPage = 5, } = {}) => {
     page,
     setPage,
     pagination,
-    allMembers
+    allMembers,
+    getAllMember
   }
 }
 

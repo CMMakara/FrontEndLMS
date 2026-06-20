@@ -16,3 +16,23 @@ export const getAllBorrowRequestAPI = async (params = {}) => {
     throw error;
   }
 };
+
+export const approveBorrowAPI = async (id) =>{
+  try {
+    let res = await api.put(`/borrowsRequest/${id}/approve`)
+    return res.data
+  } catch (error) {
+    console.log('approveBorrow error:', error);
+    throw error;
+  }
+}
+
+export const rejectBorrowAPI = async (id) =>{
+  try {
+    let res = await api.put(`/borrowsRequest/${id}/reject`)
+    return res.data
+  } catch (error) {
+    console.log('rejectBorrow error:', error);
+    throw error;
+  }
+}

@@ -6,60 +6,154 @@ import Table from '../../components/ui/Table'
 import Pagination from '../../components/ui/Pagination'
 import useMember from '../../hook/useMember'
 import useBorrow from '../../hook/useBorrow'
-
+import Modal from '../../components/ui/Modal'
+import useUser from '../../hook/useUsers';
+import { validateCreateUser } from "../../validations/CreateUserSchema";
 const Members = () => {
   // State Management
   const [selectedMember, setSelectedMember] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
-  
+  const [isModal, setIsModal] = useState(false)
+  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState({
+    full_name: '',
+    username: '',
+    email: '',
+    password: '',
+    role_id: 3,
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const { members, allMembers } = useMember({ search: searchQuery, perPage: 10000 });
+  const { members, allMembers, getAllMember } = useMember({ search: searchQuery, perPage: 10000 });
   const { borrow, getAllBorrowRecord } = useBorrow()
+  const { createUser, getAllUsers } = useUser()
 
   useEffect(() => {
     getAllBorrowRecord('', 1, 10000);
   }, []);
 
+  useEffect(() => {
+    getAllMember()
+  }, [searchQuery, currentPage])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "", // clear field error
+    }));
+  };
+  const openModal = () => {
+    setForm({
+      full_name: '',
+      username: '',
+      email: '',
+      password: '',
+      role_id: 3,
+    });
+    setErrors({});
+    setIsModal(true);
+  }
+  const handleCreate = async () => {
+    try {
+      const errors = validateCreateUser(form, [3])
+      if (Object.keys(errors).length > 0) {
+        setErrors(errors);
+        return
+      }
+      const payload = {
+        ...form,
+        role_id: Number(form.role_id)
+      };
+
+      const result = await createUser(payload);
+
+      if (!result) {
+        console.log("Create failed");
+        return;
+      }
+
+      setIsModal(false);
+
+      setForm({
+        full_name: '',
+        username: '',
+        email: '',
+        password: '',
+        role_id: 3,
+      });
+
+      setErrors({});
+
+      await getAllMember();
+
+      setCurrentPage(1);
+    } catch (error) {
+      console.log("Create error:", error);
+    }
+  };
+
   const baseURL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
-  
+
   const column = [
-    { header: 'id', accessor: 'user_id' },
     {
-      header: 'Avatar',
-      accessor: 'profile_image',
+      header: "No",
+      render: (row, index) =>
+        (currentPage - 1) * 5 + index + 1
+    },
+    {
+      header: 'Member Info',
+      accessor: '',
       render: (row) => {
-        const imageUrl = row.profile_image
-          ? row.profile_image.startsWith('http')
-            ? row.profile_image
-            : `${baseURL}/${row.profile_image.replace(/^\/+/, '')}`
-          : `${baseURL}/profiles/default-profile.png`;
+        const imagePath = row.profile_image
+          ? row.profile_image.replace('/uploads/', '')
+          : 'profiles/default-profile.png';
 
         return (
-          <img
-            src={imageUrl}
-            alt={row.full_name}
-            className="rounded-circle"
-            style={{
-              width: '40px',
-              height: '40px',
-              objectFit: 'cover'
-            }}
-            onError={(e) => {
-              e.target.src = `${baseURL}/profiles/default-profile.png`;
-            }}
-          />
+          <div className="d-flex align-items-center gap-2">
+            <img
+              src={`${import.meta.env.VITE_API_URL}${imagePath}`}
+              alt={row.full_name}
+              width={40}
+              height={40}
+              className="rounded-circle"
+              style={{ objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
+              }}
+            />
+
+            <div>
+              <div>{row.full_name}</div>
+              <small className="text-muted">
+                {row.member_code}
+              </small>
+            </div>
+          </div>
         );
       }
     },
-    { header: 'member code', accessor: 'member_code' },
-    { header: 'Full name', accessor: 'full_name' },
     { header: 'phone', accessor: 'phone' },
     { header: 'email', accessor: 'email' },
     { header: 'member type', accessor: 'member_type' },
+    {
+      header: 'Verified',
+      render: (row) =>
+        row.is_verified ? (
+          <span className="badge bg-success">Verified</span>
+        ) : (
+          <span className="badge bg-danger">Not Verified</span>
+        )
+    },
     { header: 'Books Borrowing', accessor: 'total_borrow' },
     {
       header: "Status",
@@ -89,14 +183,6 @@ const Members = () => {
             onClick={() => handleSelectMember(row)}
           >
             <i className="bi bi-eye"></i>
-          </button>
-
-          <button
-            className="action-btn borrow-history"
-            title="Borrow History"
-            onClick={() => handleSelectMember(row)} 
-          >
-            <i className="bi bi-clock-history"></i>
           </button>
         </div>
       ),
@@ -156,11 +242,10 @@ const Members = () => {
   const formatLabel = (text) =>
     text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
 
-  // 1. Filter original list from hook based on dropdown selections
   const filteredMembers = members.filter(member => {
     const matchesStatus =
       statusFilter === 'All' ||
-      (member.status ?? '').toLowerCase() === statusFilter.toLowerCase();
+      String(member.is_verified) === statusFilter;
 
     const matchesType =
       typeFilter === 'All' ||
@@ -169,7 +254,7 @@ const Members = () => {
     return matchesStatus && matchesType;
   });
 
-  
+
   const totalPages = Math.ceil(filteredMembers.length / itemsPerPage) || 1;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -213,11 +298,16 @@ const Members = () => {
     <div className="members-page">
       <div className="members-container">
         <div className="members-main">
-          
-          <div className="page-header">
-            <div className="header-content">
+          <div className="row p-3">
+            <div className="col-6">
               <h1 className="page-title">Members</h1>
               <p className="page-subtitle">Manage and monitor library members.</p>
+            </div>
+            <div className="col-6 d-flex align-items-center justify-content-end">
+              <button className="btn btn-primary" onClick={openModal}>
+                <i className="bi bi-person-plus-fill me-2"></i>
+                Create Member
+              </button>
             </div>
           </div>
 
@@ -263,8 +353,8 @@ const Members = () => {
                   }}
                   options={[
                     { value: 'All', label: 'All Status' },
-                    { value: 'active', label: 'Active' },
-                    { value: 'inactive', label: 'Inactive' },
+                    { value: '1', label: 'verified' },
+                    { value: '0', label: 'not verified' },
                   ]}
                 />
                 <Select
@@ -411,6 +501,69 @@ const Members = () => {
           </aside>
         )}
       </div>
+
+      {/* modal */}
+      <Modal
+        isOpen={isModal}
+        onClose={() => setIsModal(false)}
+        title="Create New User Account"
+        onSave={handleCreate}
+        saveText="Create"
+        btnColorSave="btn-success"
+        children={
+          <div>
+            <div className="mt-2">
+              <Input
+                label="Full Name"
+                width="100%"
+                icon="bi bi-person"
+                placeholder="Enter full name"
+                name="full_name"
+                value={form.full_name}
+                error={errors.full_name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="Username"
+                width="100%"
+                icon="bi bi-person-badge"
+                placeholder="Enter UserName"
+                name="username"
+                value={form.username}
+                error={errors.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="Email"
+                width="100%"
+                icon="bi bi-envelope"
+                placeholder="Enter email"
+                name="email"
+                value={form.email}
+                error={errors.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mt-2">
+              <Input
+                label="password"
+                width="100%"
+                icon="bi bi-lock"
+                placeholder="Enter password"
+                type="password"
+                name="password"
+                value={form.password}
+                error={errors.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 };
