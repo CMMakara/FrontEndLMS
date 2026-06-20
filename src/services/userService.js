@@ -32,7 +32,6 @@ export const createUserAPI = async (data) =>{
   }
 }
 
-
 export const getMeAPI = async () =>{
   try {
     let res = await api.get('/auth/getMe')

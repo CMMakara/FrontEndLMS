@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -105,7 +103,7 @@ function Navbar() {
               </li>
               <li><hr className="dropdown-divider" /></li>
               <li>
-                <button className="dropdown-item" onClick={() => navigate("/admin/profile")}>
+                <button className="dropdown-item" onClick={() => navigate("/librarian/profile")}>
                   <i className="bi bi-person me-2"></i> Profile
                 </button>
               </li>

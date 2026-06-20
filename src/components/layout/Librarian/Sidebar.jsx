@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import useAuth from "../../../hook/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const menuItems = [
   { to: "/librarian", end: true, icon: "bi-grid-1x2-fill", label: "Dashboard" },
   { to: "/librarian/borrow-requests", icon: "bi-inbox-fill", label: "Borrow Requests"},
   { to: "/librarian/issueBooks", icon: "bi-book-half", label: "Issue Books"},
   { to: "/librarian/returnBooks", icon: "bi-arrow-return-left", label: "Return Books" },
-  { to: "/librarian/calculateFine", icon: "bi-cash-coin", label: "Calculate Fine" },
   { to: "/librarian/Member", icon: "bi-people-fill", label: "Member" },
-  { to: "/librarian/register-member", icon: "bi-person-plus-fill", label: "Register Member" },
-  { to: "/librarian/borrow-records", icon: "bi-journal-text", label: "Borrow Records" }
 ];
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const activeColor = "#00c08b"; // The green from the image
+  const activeColor = "#00c08b"; 
+  const navigate = useNavigate();
+  const {logout} = useAuth()
+  const handleLogout = async() =>{
+    await logout();
+    navigate("/login");
+  }
 
   return (
     <div 
@@ -86,13 +91,10 @@ function Sidebar() {
 
       {/* Bottom Actions */}
       <div className="px-3 pb-4">
-        <NavLink to="/librarian/support" className="text-decoration-none d-flex align-items-center px-3 py-2 rounded-3 fw-semibold mb-1 text-muted">
-           <i className="bi bi-chat-dots fs-5 me-3"></i>
-           {!collapsed && <span>Support</span>}
-        </NavLink>
-        <button className="btn border-0 text-decoration-none d-flex align-items-center px-3 py-2 rounded-3 fw-semibold text-muted w-100 text-start">
-           <i className="bi bi-box-arrow-right fs-5 me-3"></i>
-           {!collapsed && <span>Logout</span>}
+        <button className="btn border-0 text-decoration-none d-flex align-items-center px-3 py-2 rounded-3 fw-semibold text-muted w-100 text-start bg-danger"
+        onClick={handleLogout}>
+           <i className="bi bi-box-arrow-right fs-5 me-3 text-white"></i>
+           {!collapsed && <span className="text-white">Logout</span>}
         </button>
       </div>
     </div>
