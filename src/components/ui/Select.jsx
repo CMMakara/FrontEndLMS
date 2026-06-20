@@ -5,7 +5,6 @@ const Select = ({
   width = "300px",
   icon = "bi bi-list",
   label = "",
-  placeholder = "Select ...",
   error = "",
   value,
   onChange,
@@ -31,8 +30,6 @@ const Select = ({
           onChange={onChange}
           className={`select ${error ? "select-error" : ""}`}
         >
-          <option value="">{placeholder}</option>
-
           {options.map((item) => (
             <option
               key={item.value}

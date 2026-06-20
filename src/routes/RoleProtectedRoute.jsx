@@ -14,7 +14,7 @@ function RoleProtectedRoute({children , role}) {
     }
 
     if (userRole === "Librarian") {
-      return <Navigate to="/librarian/dashboard" replace />;
+      return <Navigate to="/librarian" replace />;
     }
     return <Navigate to='/' replace />
   }
