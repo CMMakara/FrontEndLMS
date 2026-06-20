@@ -44,7 +44,7 @@ const useUserAuth = () => {
       if (res.data.role_name === "Admin") {
         navigate("/admin");
       } else if (res.data.role_name === "Librarian") {
-        navigate("/librarian/dashboard");
+        navigate("/librarian");
       } else {
         navigate("/");
       }

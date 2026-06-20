@@ -17,6 +17,15 @@ import Publishers from '../page/admin/Publishers'
 import CreateBook from '../page/admin/CreateBook'
 import UpdateBook from '../page/admin/UpdateBook'
 import ProfileAdmin from '../page/admin/ProfileAdmin'
+import LibrarianLayout from '../layouts/LibrarianLayout'
+import Member from '../page/Librarian/Member'
+import IssueBooks from '../page/Librarian/IssueBook'
+import ReturnBooks from '../page/Librarian/ReturnBook'
+import CalculateFine from '../page/Librarian/CalculateFine'
+import RegisterMember from '../page/Librarian/RegisterMember'
+import BorrowRecords from '../page/Librarian/BorrowRecords'
+import BorrowRequests from '../page/Librarian/BorrowRequests'
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -54,13 +63,22 @@ function AppRoutes() {
         </Route>
         {/* route librarian */}
         <Route
-        path='/librarian/dashboard'
+        path='/librarian'
         element={
           <RoleProtectedRoute role="Librarian">
-            <DashboardLibrarian/>
+            <LibrarianLayout/>
           </RoleProtectedRoute>
         }
-        />
+        >
+          <Route path='/librarian' element={<DashboardLibrarian/>} />
+          <Route path='/librarian/Member' element={<Member/>} />
+          <Route path='/librarian/issueBooks' element={<IssueBooks/>} />
+          <Route path='/librarian/returnBooks' element={<ReturnBooks/>} />
+          <Route path='/librarian/calculateFine' element={<CalculateFine/>} />
+          <Route path='/librarian/borrow-requests' element={<BorrowRequests/>} />
+          <Route path='/librarian/register-member' element={<RegisterMember/>} />
+          <Route path='/librarian/borrow-records' element={<BorrowRecords/>} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
