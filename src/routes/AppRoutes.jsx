@@ -23,6 +23,8 @@ import IssueBooks from '../page/Librarian/IssueBook'
 import ReturnBooks from '../page/Librarian/ReturnBook'
 import BorrowRequests from '../page/Librarian/BorrowRequests'
 import ProfileLibrarian from '../page/Librarian/profileLibrarian'
+import BookDetalt from '../page/member/BookDetalt'
+import MemberLayout from '../layouts/MemberLayout'
 
 function AppRoutes() {
   return (
@@ -36,10 +38,13 @@ function AppRoutes() {
           path="/"
           element={
             <RoleProtectedRoute role="Member">
-              <Homepage/>
+              <MemberLayout/>
             </RoleProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Homepage/>} />
+          <Route path='/member/bookDetail' element={<BookDetalt/>} />
+        </Route>
         {/* route Admin */}
         <Route 
           path='/admin'

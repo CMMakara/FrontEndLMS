@@ -18,51 +18,8 @@ function HomePage() {
     { text: "Music", icon: "bi-music-note-list", bg: "#495057", count: 27 },
   ];
   return (
-    <MemberLayout>
-      <div className="container">
-        <style>
-          {`
-            @keyframes titleFloat {
-              0%, 100% { transform: translateY(0); }
-              50% { transform: translateY(-6px); }
-            }
-            .animate-title-float {
-              animation: titleFloat 6s ease-in-out infinite;
-            }
-
-            @keyframes pulseGlow {
-              0%, 100% { box-shadow: 0 0 0px #ffc107; }
-              50% { box-shadow: 0 0 12px #ffc107; }
-            }
-            .animate-pulse-glow {
-              animation: pulseGlow 2.5s infinite;
-            }
-            
-            .carousel-control-prev-icon, .carousel-control-next-icon {
-              background-color: rgba(0, 0, 0, 0.4);
-              padding: 1.5rem;
-              border-radius: 50%;
-              background-size: 50%;
-            }
-            
-            /* រក្សាតុល្យភាពកម្ពស់រវាង Carousel និង Widget */
-            .equal-height-row {
-              display: flex;
-              flex-wrap: wrap;
-            }
-            @media (min-width: 768px) {
-              .equal-height-col {
-                display: flex;
-                flex-direction: column;
-              }
-              .equal-height-col > .carousel,
-              .equal-height-col > .card {
-                flex: 1;
-              }
-            }
-          `}
-        </style>
-
+    <div className="container mt-5">
+        
         {/* TOP HERO SECTION */}
         <div className="row g-4 mb-5 equal-height-row">
           {/* LEFT BANNER CAROUSEL */}
@@ -298,7 +255,6 @@ function HomePage() {
           </div>
         </div>
       </div>
-    </MemberLayout>
   );
 }
 export default HomePage;

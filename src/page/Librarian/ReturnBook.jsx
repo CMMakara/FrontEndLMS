@@ -127,12 +127,15 @@ const ReturnBook = () => {
       header: 'Late Days',
       accessor: 'due_date',
       render: (row) => {
-        const due = new Date(row.due_date);
-        const today = new Date();
+        const dueDate = new Date(row.due_date);
+        const endDate =
+          ['returned', 'complete'].includes(row.status?.toLowerCase())
+            ? new Date(row.return_date)
+            : new Date();
 
         const lateDays = Math.max(
           0,
-          Math.floor((today - due) / (1000 * 60 * 60 * 24))
+          Math.floor((endDate - dueDate) / (1000 * 60 * 60 * 24))
         );
 
         return (
@@ -190,13 +193,23 @@ const ReturnBook = () => {
     if (!selectedBook) return 0;
 
     const dueDate = new Date(selectedBook.due_date);
-    const today = new Date();
+    dueDate.setHours(0, 0, 0, 0);
 
-    return Math.max(0, Math.floor((today - dueDate) / (1000 * 60 * 60 * 24)));
+    const endDate = selectedBook.return_date
+      ? new Date(selectedBook.return_date)
+      : new Date();
+
+    endDate.setHours(0, 0, 0, 0);
+
+    return Math.max(
+      0,
+      Math.round((endDate - dueDate) / 86400000)
+    );
   };
 
   const lateDays = calculateLateDays();
   const fine = selectedBook?.fine || 0;
+
 
   const formatDate = (d) => new Date(d).toISOString().split('T')[0];
   const today = new Date().toISOString().split('T')[0];
