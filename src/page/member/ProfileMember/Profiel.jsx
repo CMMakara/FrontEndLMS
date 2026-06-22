@@ -11,31 +11,31 @@ const NAV_ITEMS = [
   {
     key: "profile",
     label: "My Profile",
-    icon: "bi-person-circle", // User profile
+    icon: "bi-person-fill",
     path: "/member/profile/profileMember",
   },
   {
     key: "orders",
     label: "Borrowing History",
-    icon: "bi-journal-bookmark-fill", // Borrowed books history
+    icon: "bi-box-seam",
     path: "/member/profile/borrowing-history",
   },
   {
     key: "address",
     label: "Due Date",
-    icon: "bi-calendar-event-fill", // Due dates
+    icon: "bi-person-vcard",
     path: "/member/profile/due-date",
   },
   {
     key: "payment",
     label: "Fine",
-    icon: "bi-cash-coin", // Money/fines
+    icon: "bi-wallet2",
     path: "/member/profile/fine",
   },
   {
     key: "wishlist",
     label: "Notifications",
-    icon: "bi-bell-fill", // Notifications
+    icon: "bi-heart",
     path: "/member/profile/notifications",
   },
 ];
@@ -106,12 +106,6 @@ function Field({
         readOnly={readOnly}
       />
     </div>
-  );
-}
-
-function StatusBadge({ label, variant }) {
-  return (
-    <span className={"status-badge status-badge--" + variant}>{label}</span>
   );
 }
 
@@ -246,17 +240,6 @@ function ProfileContent() {
         </div>
         <div style={{ fontSize: ".8rem", color: "#6b6b6b" }}>
           {accountMeta.role}
-        </div>
-
-        {/* is_active / is_verified badges */}
-        <div className="d-flex justify-content-center gap-2 mt-2">
-          <StatusBadge
-            label={accountMeta.is_active ? "Active" : "Inactive"}
-            variant={accountMeta.is_active ? "active" : "inactive"}
-          />
-          {accountMeta.is_verified && (
-            <StatusBadge label="Verified" variant="verified" />
-          )}
         </div>
 
         {editing && (
@@ -729,20 +712,6 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,.2);
 }
-
-/* ── Status badges (is_active / is_verified) ── */
-.status-badge {
-  font-size: .72rem;
-  font-weight: 700;
-  padding: .25rem .65rem;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: .3rem;
-}
-.status-badge--active   { background: #e6f4ea; color: #1a7a36; border: 1px solid #b7dfbf; }
-.status-badge--inactive { background: #f2f2f2; color: #6b6b6b; border: 1px solid #d4d4d4; }
-.status-badge--verified { background: #e8f0fe; color: #1a56a4; border: 1px solid #b3c8f5; }
 
 /* ── Section headings ── */
 .section-heading {
