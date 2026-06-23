@@ -44,51 +44,55 @@ function AppRoutes() {
           path="/"
           element={
             <RoleProtectedRoute role="Member">
-              <MemberLayout/>
+              <MemberLayout />
             </RoleProtectedRoute>
           }
         >
-          <Route index element={<Homepage/>} />
-          <Route path='/member/bookDetail' element={<BookDetalt/>} />
+          <Route index element={<Homepage />} />
+          <Route path="/member/profile/*" element={<Profiel />} />
+          <Route path="/member/bookDetail" element={<BookDetail />} />
         </Route>
         {/* route Admin */}
-        <Route 
-          path='/admin'
+        <Route
+          path="/admin"
           element={
-          <RoleProtectedRoute role="Admin">
-            <AdminLayout/>
-          </RoleProtectedRoute>
-        }
+            <RoleProtectedRoute role="Admin">
+              <AdminLayout />
+            </RoleProtectedRoute>
+          }
         >
-          <Route path='/admin' element={<DashboardAdmin/>} />
-          <Route path='/admin/books' element={<Book/>} />
-          <Route path='/admin/books/create' element={<CreateBook/>} />
-          <Route path='/admin/books/update/:id' element={<UpdateBook/>} />
-          <Route path='/admin/category' element={<Category/>} />
-          <Route path='/admin/users' element={<User/>} />
-          <Route path='/admin/authors' element={<Authors/>} />
-          <Route path='/admin/publishers' element={<Publishers/>} />
-          <Route path='/admin/profile' element={<ProfileAdmin/>} />
+          <Route path="/admin" element={<DashboardAdmin />} />
+          <Route path="/admin/books" element={<Book />} />
+          <Route path="/admin/books/create" element={<CreateBook />} />
+          <Route path="/admin/books/update/:id" element={<UpdateBook />} />
+          <Route path="/admin/category" element={<Category />} />
+          <Route path="/admin/users" element={<User />} />
+          <Route path="/admin/authors" element={<Authors />} />
+          <Route path="/admin/publishers" element={<Publishers />} />
+          <Route path="/admin/profile" element={<ProfileAdmin />} />
         </Route>
         {/* route librarian */}
         <Route
-        path='/librarian'
-        element={
-          <RoleProtectedRoute role="Librarian">
-            <LibrarianLayout/>
-          </RoleProtectedRoute>
-        }
+          path="/librarian"
+          element={
+            <RoleProtectedRoute role="Librarian">
+              <LibrarianLayout />
+            </RoleProtectedRoute>
+          }
         >
-          <Route path='/librarian' element={<DashboardLibrarian/>} />
-          <Route path='/librarian/Member' element={<Member/>} />
-          <Route path='/librarian/issueBooks' element={<IssueBooks/>} />
-          <Route path='/librarian/returnBooks' element={<ReturnBooks/>} />
-          <Route path='/librarian/borrow-requests' element={<BorrowRequests/>} />
-          <Route path='/librarian/profile' element={<ProfileLibrarian/>} />
+          <Route path="/librarian" element={<DashboardLibrarian />} />
+          <Route path="/librarian/Member" element={<Member />} />
+          <Route path="/librarian/issueBooks" element={<IssueBooks />} />
+          <Route path="/librarian/returnBooks" element={<ReturnBooks />} />
+          <Route
+            path="/librarian/borrow-requests"
+            element={<BorrowRequests />}
+          />
+          <Route path="/librarian/profile" element={<ProfileLibrarian />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default AppRoutes
+export default AppRoutes;
