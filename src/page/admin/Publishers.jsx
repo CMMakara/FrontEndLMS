@@ -31,6 +31,10 @@ function Publishers() {
       accessor: "phone",
     },
     {
+      header: "address",
+      accessor: "address",
+    },
+    {
       header: "Created At",
       accessor: "created_at",
       render: (row) =>

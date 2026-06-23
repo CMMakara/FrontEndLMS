@@ -112,36 +112,10 @@ function Loginform({
                   />
                 </div>
 
-                {/* Remember */}
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <div className="form-check">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="remember"
-                    />
-
-                    <label
-                      htmlFor="remember"
-                      className="form-check-label"
-                    >
-                      Remember me
-                    </label>
-                  </div>
-
-                  <a
-                    href="#"
-                    className="text-decoration-none"
-                    style={styles.lightText}
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
-
                 {/* Button */}
                 <button
                   type="submit"
-                  className="btn btn-lg w-100 fw-semibold text-white d-flex justify-content-center align-items-center gap-2"
+                  className="btn btn-lg w-100 fw-semibold text-white d-flex justify-content-center align-items-center gap-2 mt-4"
                   style={styles.primaryBg}
                   disabled={loading}
                 >

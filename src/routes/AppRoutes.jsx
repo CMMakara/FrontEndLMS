@@ -1,40 +1,44 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "../page/member/Loginpage";
-import Homepage from "../page/member/Homepage";
-import ProtectedRoute from "./ProtectedRoute";
-import LoginAdminpage from "../page/admin/LoginAdminpage";
-import LoginLibrarianpage from "../page/Librarian/LoginLibrarianpage";
-import RoleProtectedRoute from "./RoleProtectedRoute";
-import DashboardAdmin from "../page/admin/DashboardAdmin";
-import DashboardLibrarian from "../page/Librarian/DashboardLibrarian";
-import AdminLayout from "../layouts/AdminLayout";
-import Book from "../page/admin/Book";
-import Category from "../page/admin/category";
-import User from "../page/admin/Users";
-import Authors from "../page/admin/Authors";
-import Publishers from "../page/admin/Publishers";
-import CreateBook from "../page/admin/CreateBook";
-import UpdateBook from "../page/admin/UpdateBook";
-import ProfileAdmin from "../page/admin/ProfileAdmin";
-import LibrarianLayout from "../layouts/LibrarianLayout";
-import Member from "../page/Librarian/Member";
-import IssueBooks from "../page/Librarian/IssueBook";
-import ReturnBooks from "../page/Librarian/ReturnBook";
-import BorrowRequests from "../page/Librarian/BorrowRequests";
-import ProfileLibrarian from "../page/Librarian/profileLibrarian";
-import BookDetalt from "../page/member/BookDetail";
-import MemberLayout from "../layouts/MemberLayout";
-import Profiel from "../page/member/ProfileMember/Profiel";
-import BookDetail from "../page/member/BookDetail";
+import React from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import LoginPage from "../page/member/Loginpage"
+import Homepage from "../page/member/Homepage"
+import ProtectedRoute from './ProtectedRoute'
+import LoginAdminpage from '../page/admin/LoginAdminpage'
+import LoginLibrarianpage from '../page/Librarian/LoginLibrarianpage'
+import RoleProtectedRoute from './RoleProtectedRoute'
+import DashboardAdmin from '../page/admin/DashboardAdmin'
+import DashboardLibrarian from '../page/Librarian/DashboardLibrarian'
+import AdminLayout from '../layouts/AdminLayout'
+import Book from '../page/admin/Book'
+import Category from '../page/admin/category'
+import User from '../page/admin/Users'
+import Authors from '../page/admin/Authors'
+import Publishers from '../page/admin/Publishers'
+import CreateBook from '../page/admin/CreateBook'
+import UpdateBook from '../page/admin/UpdateBook'
+import ProfileAdmin from '../page/admin/ProfileAdmin'
+import LibrarianLayout from '../layouts/LibrarianLayout'
+import Member from '../page/Librarian/Member'
+import IssueBooks from '../page/Librarian/IssueBook'
+import ReturnBooks from '../page/Librarian/ReturnBook'
+import BorrowRequests from '../page/Librarian/BorrowRequests'
+import ProfileLibrarian from '../page/Librarian/profileLibrarian'
+import BookDetalt from '../page/member/BookDetalt'
+import MemberLayout from '../layouts/MemberLayout'
+import Register from '../page/member/Register'
+import PageOTP from '../page/member/PageOTP'
+import ForgotPassword from '../page/member/ForgotPassword'
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin/login" element={<LoginAdminpage />} />
-        <Route path="/librarian/login" element={<LoginLibrarianpage />} />
+        <Route path='/login' element={<LoginPage/>} />
+        <Route path='/register' element={<Register/>} />
+        <Route path='/verify-otp' element={<PageOTP/>} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path='/admin/login' element={<LoginAdminpage/>} />
+        <Route path='/librarian/login' element={<LoginLibrarianpage/>} />
         {/* route Member */}
         <Route
           path="/"

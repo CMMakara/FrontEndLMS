@@ -143,31 +143,31 @@ function UpdateBook() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const { thumbnail, ...formData } = form;
+    const { thumbnail, ...formData } = form;
 
-  const payload = {
-    ...formData,
-    category_id: form.category_id ? Number(form.category_id) : null,
-    author_id: form.author_id ? Number(form.author_id) : null,
-    publisher_id: form.publisher_id ? Number(form.publisher_id) : null,
-    publish_year: form.publish_year ? Number(form.publish_year) : null,
-    pages: form.pages ? Number(form.pages) : null,
-    total_copies: form.total_copies ? Number(form.total_copies) : null,
-    available_copies: form.available_copies ? Number(form.available_copies) : null,
+    const payload = {
+      ...formData,
+      category_id: form.category_id ? Number(form.category_id) : null,
+      author_id: form.author_id ? Number(form.author_id) : null,
+      publisher_id: form.publisher_id ? Number(form.publisher_id) : null,
+      publish_year: form.publish_year ? Number(form.publish_year) : null,
+      pages: form.pages ? Number(form.pages) : null,
+      total_copies: form.total_copies ? Number(form.total_copies) : null,
+      available_copies: form.available_copies ? Number(form.available_copies) : null,
+    };
+
+
+    const res = await updateBook(id, payload);
+    if (!res) return;
+
+    if (thumbnail instanceof File) {
+      await uploadImageBook(id, thumbnail);
+    }
+
+    navigate("/admin/books");
   };
-
-
-  const res = await updateBook(id, payload);
-  if (!res) return;
-
-  if (thumbnail instanceof File) {
-    await uploadImageBook(id, thumbnail);
-  }
-
-  navigate("/admin/books");
-};
   return (
     <div
       className="container-fluid py-4 px-4"
@@ -341,12 +341,16 @@ function UpdateBook() {
                         const value = e.target.value;
                         setField("category_id", value);
                       }}
-                      options={
-                        category?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Category --"
+                        },
+                        ...(category?.map((data) => ({
                           value: data.id,
                           label: data.category_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                   {/* Author */}
@@ -360,12 +364,16 @@ function UpdateBook() {
                         const value = e.target.value;
                         setField("author_id", value);
                       }}
-                      options={
-                        author?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Author --"
+                        },
+                        ...(author?.map((data) => ({
                           value: data.id,
                           label: data.author_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                   {/* Publisher */}
@@ -379,12 +387,16 @@ function UpdateBook() {
                         const value = e.target.value;
                         setField("publisher_id", value);
                       }}
-                      options={
-                        publishers?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Publisher --"
+                        },
+                        ...(publishers?.map((data) => ({
                           value: data.id,
                           label: data.publisher_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                 </Section>
@@ -538,7 +550,7 @@ function UpdateBook() {
                 type="button"
                 className="btn btn-light px-4"
                 style={{ fontSize: 13, borderRadius: 10 }}
-                onClick={()=> navigate("/admin/books")}
+                onClick={() => navigate("/admin/books")}
               >
                 Cancel
               </button>

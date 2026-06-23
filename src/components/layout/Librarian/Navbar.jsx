@@ -39,7 +39,7 @@ function Navbar() {
         {/* LEFT: Greeting */}
         <div className="d-flex align-items-center">
           <h5 className="mb-0 fw-bold" style={{ color: "#1e293b", fontSize: "20px" }}>
-            Good Morning, {userProfile?.full_name?.split(' ')[0] || "Admin"}! <span className="fs-5">👋</span>
+            Good Morning, 
           </h5>
         </div>
 
