@@ -25,12 +25,18 @@ import BorrowRequests from '../page/Librarian/BorrowRequests'
 import ProfileLibrarian from '../page/Librarian/profileLibrarian'
 import BookDetalt from '../page/member/BookDetalt'
 import MemberLayout from '../layouts/MemberLayout'
+import Register from '../page/member/Register'
+import PageOTP from '../page/member/PageOTP'
+import ForgotPassword from '../page/member/ForgotPassword'
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/login' element={<LoginPage/>} />
+        <Route path='/register' element={<Register/>} />
+        <Route path='/verify-otp' element={<PageOTP/>} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/admin/login' element={<LoginAdminpage/>} />
         <Route path='/librarian/login' element={<LoginLibrarianpage/>} />
         {/* route Member */}

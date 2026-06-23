@@ -1,0 +1,511 @@
+/* ==================================================
+   LIBRARY DASHBOARD — STYLES
+   Theme: Modern Admin (Tabler / Flowbite / AdminLTE inspired)
+================================================== */
+
+:root {
+  --dash-bg: #F8FAFC;
+  --dash-card-bg: #FFFFFF;
+  --dash-border: #E5E7EB;
+  --dash-text: #1F2937;
+  --dash-text-secondary: #64748B;
+  --dash-primary: #00C18F;
+  --dash-primary-soft: rgba(0, 193, 143, 0.1);
+  --dash-radius-lg: 20px;
+  --dash-radius-md: 18px;
+  --dash-radius-sm: 12px;
+  --dash-shadow: 0 2px 10px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --dash-shadow-hover: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.lib-dashboard {
+  background: var(--dash-bg);
+  color: var(--dash-text);
+  padding: 24px;
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==================================================
+   PAGE HEADER
+================================================== */
+
+.dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.dash-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--dash-text);
+}
+
+.dash-subtitle {
+  margin: 4px 0 0;
+  color: var(--dash-text-secondary);
+  font-size: 0.95rem;
+}
+
+.dash-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-outline-action,
+.btn-primary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--dash-border);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-action {
+  background: #FFFFFF;
+  color: var(--dash-text);
+}
+
+.btn-outline-action:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.btn-primary-action {
+  background: var(--dash-primary);
+  color: #FFFFFF;
+  border-color: var(--dash-primary);
+  box-shadow: 0 4px 12px rgba(0, 193, 143, 0.28);
+}
+
+.btn-primary-action:hover {
+  background: #00A87C;
+  border-color: #00A87C;
+  color: #FFFFFF;
+}
+
+/* ==================================================
+   SUMMARY CARDS
+================================================== */
+
+.summary-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-md);
+  box-shadow: var(--dash-shadow);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--dash-shadow-hover);
+}
+
+.summary-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.summary-label {
+  font-size: 0.82rem;
+  color: var(--dash-text-secondary);
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dash-text);
+  margin-top: 2px;
+}
+
+.summary-value small {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--dash-text-secondary);
+  margin-left: 4px;
+}
+
+/* ==================================================
+   GENERIC CARD
+================================================== */
+
+.dash-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-lg);
+  box-shadow: var(--dash-shadow);
+  padding: 22px;
+  transition: box-shadow 0.22s ease;
+}
+
+.dash-card:hover {
+  box-shadow: var(--dash-shadow-hover);
+}
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 0;
+  background: var(--dash-card-bg);
+  z-index: 1;
+}
+
+.card-title-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--dash-text);
+}
+
+.card-subtext {
+  font-size: 0.8rem;
+  color: var(--dash-text-secondary);
+  font-weight: 500;
+}
+
+.btn-link-action {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dash-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.btn-link-action:hover {
+  text-decoration: underline;
+}
+
+/* ==================================================
+   CHARTS
+================================================== */
+
+.chart-wrap {
+  position: relative;
+  height: 260px;
+  width: 100%;
+}
+
+.chart-tall {
+  height: 300px;
+}
+
+/* ==================================================
+   TIMELINE
+================================================== */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--dash-border);
+}
+
+.timeline-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.timeline-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.timeline-text {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--dash-text);
+}
+
+.timeline-time {
+  font-size: 0.78rem;
+  color: var(--dash-text-secondary);
+}
+
+/* ==================================================
+   QUICK SUMMARY MINI CARDS
+================================================== */
+
+.quick-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.mini-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-sm);
+  padding: 14px;
+  transition: background 0.2s ease;
+}
+
+.mini-card:hover {
+  background: var(--dash-primary-soft);
+}
+
+.mini-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  background: var(--dash-primary-soft);
+  color: var(--dash-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.mini-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.mini-label {
+  font-size: 0.76rem;
+  color: var(--dash-text-secondary);
+}
+
+/* ==================================================
+   TABLE
+================================================== */
+
+.dash-table thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dash-text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--dash-border);
+  padding-bottom: 12px;
+  position: sticky;
+  top: 0;
+  background: var(--dash-card-bg);
+}
+
+.dash-table tbody td {
+  font-size: 0.875rem;
+  color: var(--dash-text);
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dash-table tbody tr:hover {
+  background: #FAFBFC;
+}
+
+.status-pill {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+/* ==================================================
+   MEMBER CARDS
+================================================== */
+
+.member-card {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-md);
+  padding: 20px;
+  text-align: center;
+  height: 100%;
+  
+  /* Flex layout to keep items structurally aligned */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--dash-shadow-hover);
+}
+
+.member-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 2px var(--dash-primary-soft);
+}
+
+.member-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--dash-text);
+  line-height: 1.3;
+}
+
+.member-type {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--dash-primary);
+  background: var(--dash-primary-soft);
+  padding: 3px 12px;
+  border-radius: 999px;
+  margin: 8px 0 16px;
+}
+
+.member-footer {
+  width: 100%;
+}
+
+.member-progress .progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--dash-border);
+  overflow: hidden;
+}
+
+.member-progress .progress-bar {
+  height: 100%;
+  background: var(--dash-primary);
+  border-radius: 999px;
+  transition: width 0.4s ease; /* Smooth loading animation */
+}
+
+.member-progress-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dash-text-secondary);
+  margin-top: 6px;
+}
+
+.member-overdue {
+  display: block;
+  font-size: 0.75rem;
+}
+
+/* ==================================================
+   QUICK ACTIONS
+================================================== */
+
+.quick-action-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius-md);
+  box-shadow: var(--dash-shadow);
+  padding: 22px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dash-text);
+  transition: all 0.22s ease;
+}
+
+.quick-action-card i {
+  font-size: 1.5rem;
+  color: var(--dash-primary);
+  transition: transform 0.22s ease;
+}
+
+.quick-action-card:hover {
+  background: var(--dash-primary);
+  border-color: var(--dash-primary);
+  color: #FFFFFF;
+  transform: translateY(-4px);
+  box-shadow: var(--dash-shadow-hover);
+}
+
+.quick-action-card:hover i {
+  color: #FFFFFF;
+  transform: scale(1.1);
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@media (max-width: 575.98px) {
+  .lib-dashboard {
+    padding: 16px;
+  }
+
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dash-actions {
+    width: 100%;
+  }
+
+  .dash-actions .btn-outline-action,
+  .dash-actions .btn-primary-action {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .quick-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
