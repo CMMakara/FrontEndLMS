@@ -23,11 +23,12 @@ import IssueBooks from '../page/Librarian/IssueBook'
 import ReturnBooks from '../page/Librarian/ReturnBook'
 import BorrowRequests from '../page/Librarian/BorrowRequests'
 import ProfileLibrarian from '../page/Librarian/profileLibrarian'
-import BookDetalt from '../page/member/BookDetalt'
+import BookDetalt from '../page/member/BookDetail'
 import MemberLayout from '../layouts/MemberLayout'
 import Register from '../page/member/Register'
 import PageOTP from '../page/member/PageOTP'
 import ForgotPassword from '../page/member/ForgotPassword'
+import HelpPage from '../page/member/HelpPage'
 
 function AppRoutes() {
   return (
@@ -49,8 +50,9 @@ function AppRoutes() {
           }
         >
           <Route index element={<Homepage />} />
-          <Route path="/member/profile/*" element={<Profiel />} />
-          <Route path="/member/bookDetail" element={<BookDetail />} />
+          {/* <Route path="/member/profile/*" element={<Profiel />} /> */}
+          <Route path="/member/bookDetail" element={<BookDetalt />} />
+          <Route path="/member/help" element={<HelpPage />} />
         </Route>
         {/* route Admin */}
         <Route
@@ -84,10 +86,7 @@ function AppRoutes() {
           <Route path="/librarian/Member" element={<Member />} />
           <Route path="/librarian/issueBooks" element={<IssueBooks />} />
           <Route path="/librarian/returnBooks" element={<ReturnBooks />} />
-          <Route
-            path="/librarian/borrow-requests"
-            element={<BorrowRequests />}
-          />
+          <Route path="/librarian/borrow-requests"element={<BorrowRequests />}/>
           <Route path="/librarian/profile" element={<ProfileLibrarian />} />
         </Route>
       </Routes>

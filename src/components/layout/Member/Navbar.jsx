@@ -1,192 +1,124 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function Navbar() {
-  const [hover, setHover] = useState("");
+  const [scrolled, setScrolled] = useState(false);
 
-  const navStyle = (item) => ({
-    transition: "all .3s ease",
-    transform: hover === item ? "translateY(-2px)" : "translateY(0)",
-    color: hover === item ? "#ffd60a" : "white",
-  });
+  // Detect scroll to toggle navbar style
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
       <style>{`
         /* ===========================
-           MAIN NAVBAR
+           CUSTOM ANIMATIONS & HOVERS
         =========================== */
-        .lib-nav{
-          background:#175468;
-          padding:12px 24px;
-          position:sticky;
-          top:0;
-          z-index:999;
-          backdrop-filter:blur(12px);
-          box-shadow:0 8px 25px rgba(0,0,0,.12);
-          border-bottom:1px solid rgba(255,255,255,.1);
-          transition:.4s;
+        /* Transparent to Colored Transition */
+        .navbar {
+          transition: all 0.4s ease-in-out;
         }
 
-        .lib-nav:hover{
-          box-shadow:0 10px 30px rgba(0,180,216,.3);
+        /* Scrolled State */
+        .nav-scrolled {
+          background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+          backdrop-filter: blur(16px);
+          box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+          padding-top: 10px !important;
+          padding-bottom: 10px !important;
         }
 
-        /* ===========================
-           BRAND
-        =========================== */
-        .lib-nav .navbar-brand{
-          font-size:2rem;
-          font-weight:800;
-          color:#fff !important;
-          letter-spacing:1px;
-          transition:.3s;
+        /* Transparent Top State */
+        .nav-transparent {
+          background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+          padding-top: 20px !important;
+          padding-bottom: 20px !important;
         }
 
-        .lib-nav .navbar-brand:hover{
-          color:#ffd60a !important;
-          transform:scale(1.05);
+        /* Nav Links */
+        .nav-link {
+          transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+          color: #cffafe !important;
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.15);
         }
 
-        /* ===========================
-           NAV LINKS
-        =========================== */
-        .lib-nav .nav-link{
-          color:white !important;
-          font-weight:600;
-          padding:10px 18px !important;
-          margin:0 4px;
-          border-radius:10px;
-          transition:.3s;
+        /* Dropdown Animation */
+        .dropdown-menu {
+          animation: drop 0.25s ease;
+        }
+        @keyframes drop {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown-item {
+          transition: 0.3s;
+        }
+        .dropdown-item:hover {
+          background: #e0e7ff; 
+          color: #4f46e5;      
+          padding-left: 26px;
         }
 
-        .lib-nav .nav-link:hover{
-          background:rgba(255,255,255,.15);
-          color:#ffd60a !important;
-          transform:translateY(-2px);
+        /* Interactive Elements */
+        .notification-btn {
+          transition: 0.3s;
         }
-
-        .lib-nav .nav-link.active{
-          background:rgba(255,255,255,.2);
-          color:#ffd60a !important;
+        .notification-btn:hover {
+          background: white !important;
+          color: #4f46e5 !important;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        /* ===========================
-           DROPDOWN
-        =========================== */
-        .lib-nav .dropdown-menu{
-          border:none;
-          border-radius:15px;
-          overflow:hidden;
-          margin-top:10px;
-          box-shadow:0 10px 30px rgba(0,0,0,.15);
-          animation:drop .25s ease;
+        
+        .profile-img {
+          transition: 0.3s;
         }
-
-        @keyframes drop{
-          from{opacity:0; transform:translateY(10px);}
-          to{opacity:1; transform:translateY(0);}
+        .profile-img:hover {
+          transform: scale(1.08);
+          border-color: #cffafe !important;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.15);
         }
-
-        .lib-nav .dropdown-item{
-          padding:12px 18px;
-          transition:.3s;
+        .nav-solid {
+          background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+          backdrop-filter: blur(16px);
+          box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
-
-        .lib-nav .dropdown-item:hover{
-          background:#caf0f8;
-          color:#0077b6;
-          padding-left:24px;
-        }
-
-        /* ===========================
-           NOTIFICATION BUTTON
-        =========================== */
-       .notification-btn{
-        width:45px;
-        height:45px;
-        border-radius:50% !important;
-        border:1px solid white !important;
-        transition:.3s;
-        color:white;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        }
-
-        .notification-btn:hover{
-          background:white !important;
-          color:#00b4d8 !important;
-          transform:translateY(-2px);
-        }
-
-        .notification-btn .badge{
-          font-size:9px;
-        }
-
-        /* ===========================
-           PROFILE
-        =========================== */
-        .profile-btn{
-          border:none !important;
-          background:transparent !important;
-          padding:0;
-        }
-
-        .profile-image{
-          width:42px;
-          height:42px;
-          border-radius:50%;
-          border:2px solid white;
-          transition:.3s;
-          object-fit:cover;
-        }
-
-        .profile-image:hover{
-          transform:scale(1.1);
-          border-color:#ffd60a;
-        }
-
-        /* ===========================
-           TOGGLER
-        =========================== */
-        .lib-nav .navbar-toggler{
-          border:1px solid rgba(255,255,255,.5);
-        }
-
-        .lib-nav .navbar-toggler:focus{
-          box-shadow:none;
-        }
-
-        /* ===========================
-           MOBILE
-        =========================== */
-        @media(max-width:991px){
-          .lib-nav .navbar-collapse{
-            background:rgba(255,255,255,.08);
-            backdrop-filter:blur(15px);
-            padding:15px;
-            border-radius:15px;
-            margin-top:15px;
-          }
-
-          .lib-nav .nav-link{
-            margin-bottom:8px;
+        /* Mobile Adjustments */
+        @media(max-width: 991px) {
+          .navbar-collapse {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
           }
         }
       `}</style>
 
-      <nav className="lib-nav navbar navbar-expand-lg navbar-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark fixed-top nav-solid">
         <div className="container">
 
           {/* Logo */}
-          <a className="navbar-brand" href="#">
-            <i className="bi bi-mortarboard-fill me-2"></i>
+          <a className="navbar-brand d-flex align-items-center fw-bold fs-4 text-white" style={{ letterSpacing: "0.5px" }} href="#">
+            <i className="bi bi-mortarboard-fill me-2 fs-3"></i>
             LMS
           </a>
 
-          {/* Toggle */}
+          {/* Mobile Toggle */}
           <button
-            className="navbar-toggler"
+            className="navbar-toggler rounded-3 border-white border-opacity-50 shadow-none"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
@@ -194,122 +126,87 @@ function Navbar() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="collapse navbar-collapse rounded-4 p-3 p-lg-0 mt-3 mt-lg-0" id="navbarNav">
 
-            {/* Menu */}
-            <ul className="navbar-nav me-auto ms-3">
-              {["HOME", "COURSES", "ABOUTS"].map((item) => (
-                <li className="nav-item" key={item}>
-                  <a
-                    href="#"
-                    className="nav-link"
-                    style={navStyle(item)}
-                    onMouseEnter={() => setHover(item)}
-                    onMouseLeave={() => setHover("")}
-                  >
+            {/* Menu Links */}
+            <ul className="navbar-nav me-auto ms-lg-4 align-items-center">
+              {["HOME", "BOOKS", "FAQ & ABOUT US"].map((item) => (
+                <li className="nav-item m-1 m-lg-0 mx-lg-1" key={item}>
+                  <a href="#" className="nav-link text-white fw-semibold px-3 py-2 rounded-pill">
                     {item}
                   </a>
                 </li>
               ))}
-
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  data-bs-toggle="dropdown"
-                >
-                  CATEGORIES
-                </a>
-
-                <ul className="dropdown-menu">
-                  <li><a className="dropdown-item" href="#">Programming</a></li>
-                  <li><a className="dropdown-item" href="#">Design</a></li>
-                  <li><a className="dropdown-item" href="#">Business</a></li>
-                  <li><a className="dropdown-item" href="#">Marketing</a></li>
-                </ul>
-              </li>
             </ul>
 
-            {/* Notification */}
-            <div className="dropdown me-3">
-              <button
-                className="btn notification-btn position-relative"
-                data-bs-toggle="dropdown"
-              >
-                <i className="bi bi-bell-fill"></i>
+            {/* Actions (Notifications & Profile) */}
+            <div className="d-flex align-items-center mt-3 mt-lg-0 justify-content-center">
 
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  3
-                </span>
-              </button>
+              {/* Notification */}
+              <div className="dropdown me-3">
+                <button
+                  className="btn notification-btn rounded-circle text-white d-flex align-items-center justify-content-center position-relative border border-white border-opacity-25"
+                  data-bs-toggle="dropdown"
+                  style={{ width: "45px", height: "45px", background: "rgba(255,255,255,0.1)" }}
+                >
+                  <i className="bi bi-bell-fill"></i>
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-primary" style={{ fontSize: "10px" }}>
+                    3
+                  </span>
+                </button>
 
-              <ul
-                className="dropdown-menu dropdown-menu-end shadow border-0"
-                style={{ width: "320px" }}
-              >
-                <li>
-                  <h6 className="dropdown-header">🔔 Notifications</h6>
-                </li>
+                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-3" style={{ width: "320px" }}>
+                  <li><h6 className="dropdown-header fw-bold">🔔 Notifications</h6></li>
+                  <li>
+                    <a className="dropdown-item py-2" href="#">
+                      <strong>📚 Programming</strong><br />
+                      <small className="text-muted">New course added in Programming.</small>
+                    </a>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <a className="dropdown-item py-2" href="#">
+                      <strong>🎨 Design</strong><br />
+                      <small className="text-muted">Design category updated.</small>
+                    </a>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li><a className="dropdown-item text-center text-primary fw-bold py-2" href="#">View All Notifications</a></li>
+                </ul>
+              </div>
 
-                <li>
-                  <a className="dropdown-item" href="#">
-                    <strong>📚 Programming</strong>
-                    <br />
-                    <small className="text-muted">
-                      New course added in Programming category.
-                    </small>
-                  </a>
-                </li>
+              {/* Profile */}
+              <div className="dropdown">
+                <button className="btn p-0 border-0 bg-transparent shadow-none" data-bs-toggle="dropdown">
+                  <img
+                    src="https://i.pravatar.cc/40"
+                    alt="Profile"
+                    className="profile-img rounded-circle border border-2 border-white border-opacity-50 object-fit-cover"
+                    style={{ width: "45px", height: "45px" }}
+                  />
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-3">
+                  <li>
+                    <a className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2" href="#">
+                      <i className="bi bi-person-circle"></i>
+                      Profile
+                    </a>
+                  </li>
 
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
 
-                <li>
-                  <a className="dropdown-item" href="#">
-                    <strong>🎨 Design</strong>
-                    <br />
-                    <small className="text-muted">
-                      Design category updated with new UI lessons.
-                    </small>
-                  </a>
-                </li>
+                  <li>
+                    <a className="dropdown-item py-2 text-danger fw-bold d-flex align-items-center gap-2" href="#">
+                      <i className="bi bi-box-arrow-right"></i>
+                      Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-
-                <li>
-                  <a className="dropdown-item text-center text-primary" href="#">
-                    View All Notifications
-                  </a>
-                </li>
-              </ul>
             </div>
-
-            {/* Profile */}
-            <div className="dropdown">
-              <button className="profile-btn" data-bs-toggle="dropdown">
-                <img
-                  src="https://i.pravatar.cc/40"
-                  alt="Profile"
-                  className="profile-image"
-                />
-              </button>
-
-              <ul className="dropdown-menu dropdown-menu-end">
-                <li><a className="dropdown-item" href="#">👤 Profile</a></li>
-                <li><a className="dropdown-item" href="#">📊 Dashboard</a></li>
-                <li><a className="dropdown-item" href="#">⚙️ Settings</a></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li>
-                  <a className="dropdown-item text-danger" href="#">
-                    🚪 Logout
-                  </a>
-                </li>
-              </ul>
-            </div>
-
           </div>
         </div>
       </nav>
