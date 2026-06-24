@@ -27,7 +27,7 @@ const Card = ({
       )}
 
       {/* BODY */}
-      <div className={`p-4 ${bodyClass}`}>{children}</div>
+      <div className={` ${bodyClass}`}>{children}</div>
 
       {/* FOOTER */}
       {footer && (
