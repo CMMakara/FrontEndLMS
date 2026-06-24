@@ -27,6 +27,7 @@ import BookDetalt from "../page/member/BookDetail";
 import MemberLayout from "../layouts/MemberLayout";
 import Profiel from "../page/member/ProfileMember/Profiel";
 import BookDetail from "../page/member/BookDetail";
+import BookListPage from "../page/member/BookListPage";
 
 function AppRoutes() {
   return (
@@ -46,7 +47,8 @@ function AppRoutes() {
         >
           <Route index element={<Homepage />} />
           <Route path="/member/profile/*" element={<Profiel />} />
-          <Route path="/member/bookDetail" element={<BookDetail />} />
+          <Route path="/member/books" element={<BookListPage />} />
+          <Route path="/member/books/:id" element={<BookDetail />} />
         </Route>
         {/* route Admin */}
         <Route
