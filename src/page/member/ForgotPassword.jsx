@@ -1,30 +1,42 @@
 import React, { useState } from "react";
 import Input from "../../components/ui/Input";
 import { useNavigate } from "react-router-dom";
+import useUserAuth from "../../hook/useAuth";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const { forgotPassword } = useUserAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
     if (!isValid) {
       setStatus("error");
       return;
     }
 
-    setSubmitting(true);
-    setStatus(null);
+    try {
+      setSubmitting(true);
+      setStatus(null);
 
-    setTimeout(() => {
-      setSubmitting(false);
+      await forgotPassword(email);
+
       setStatus("success");
-    }, 1200);
+      
+      navigate("/otp-forgot", { state: { email } });
+
+    } catch (error) {
+      setStatus("error");
+      console.log(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -37,10 +49,8 @@ const ForgotPasswordPage = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* overlay */}
       <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-75"></div>
 
-      {/* back icon */}
       <button
         type="button"
         onClick={() => navigate("/login")}
@@ -50,7 +60,6 @@ const ForgotPasswordPage = () => {
         <i className="bi bi-arrow-left"></i>
       </button>
 
-      {/* CARD */}
       <div
         className="card text-center text-white border-0 shadow-lg"
         style={{
@@ -62,9 +71,22 @@ const ForgotPasswordPage = () => {
       >
         <div className="card-body p-4">
           <h4 className="fw-bold">Reset Password</h4>
+
           <p className="small text-light opacity-75">
-            Enter your email and we’ll send a reset link.
+            Enter your email and we’ll send a reset code.
           </p>
+
+          {status === "error" && (
+            <div className="alert alert-danger py-2">
+              Something went wrong or invalid email
+            </div>
+          )}
+
+          {status === "success" && (
+            <div className="alert alert-success py-2">
+              OTP sent successfully
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-3">
             <Input

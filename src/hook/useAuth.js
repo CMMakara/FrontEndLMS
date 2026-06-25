@@ -1,4 +1,4 @@
-import { loginUser, logoutUserAPI, registerAPI, resendOtpAPI, verifyOtpAPI } from "../services/authService";
+import { forgotPasswordAPI, loginUser, logoutUserAPI, registerAPI, resendOtpAPI, verifyOtpAPI } from "../services/authService";
 import { data, useNavigate } from "react-router-dom";
 import { setAuth } from "../utils/auth";
 import { validateLogin } from "../validations/LoginSchema";
@@ -144,6 +144,22 @@ const useUserAuth = () => {
     }
   };
 
+  const forgotPassword = async (email) =>{
+    try {
+      return await forgotPasswordAPI(email);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+   const resetPassword  = async (data) =>{
+    try {
+      return  await forgotPasswordAPI(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   return {
     handleLogin,
     errors,
@@ -152,7 +168,9 @@ const useUserAuth = () => {
     logout,
     register,
     verifyOtp,
-    resendOtp
+    resendOtp,
+    forgotPassword,
+    resetPassword
   };
 };
 

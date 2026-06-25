@@ -1,8 +1,7 @@
 import React from "react";
 import useUser from '../../hook/useUsers'
 function ProfileLibrarian() {
-    const {userProfile} = useUser()
-    console.log(userProfile?.username)
+    const { userProfile } = useUser()
 
     return (
         <div className="d-flex bg-light container">
@@ -28,12 +27,19 @@ function ProfileLibrarian() {
                             <div className="d-md-flex justify-content-between align-items-end">
                                 <div className="d-flex align-items-end gap-3 flex-wrap">
                                     <img
-                                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80"
-                                        alt="Graziele Lopes"
+                                        src={
+                                            userProfile?.profile_image
+                                                ? `${import.meta.env.VITE_API_URL}profiles/${userProfile.profile_image}`
+                                                : `${import.meta.env.VITE_API_URL}profiles/default-profile.png`
+                                        }
+                                        alt="Profile"
                                         className="rounded-circle border border-4 border-white shadow-sm"
                                         width="110"
                                         height="110"
-                                        style={{ objectFit: 'cover' }}
+                                        style={{ objectFit: "cover" }}
+                                        onError={(e) => {
+                                            e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
+                                        }}
                                     />
                                     <div className="mb-2">
                                         <div className="d-flex align-items-center gap-2">
@@ -82,7 +88,7 @@ function ProfileLibrarian() {
                                             <span className="fw-semibold text-dark">{userProfile?.username}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="d-flex gap-3 mt-4">
                                         <div className="text-muted"><i className="bi bi-geo-alt fs-5"></i></div>
                                         <div>
@@ -114,8 +120,8 @@ function ProfileLibrarian() {
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    
+
+
                                 </div>
 
 
