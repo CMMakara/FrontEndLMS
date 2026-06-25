@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   useNavigate,
   useLocation,
@@ -6,6 +6,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+// Import your actual API service
+import { getMeAPI } from "../../../services/userService";
 
 const NAV_ITEMS = [
   {
@@ -48,7 +50,9 @@ function Sidebar() {
 
   return (
     <aside className="sidebar-card d-flex flex-column">
+           {" "}
       <nav>
+               {" "}
         {NAV_ITEMS.map((item) => (
           <button
             key={item.key}
@@ -58,33 +62,26 @@ function Sidebar() {
             }
             onClick={() => navigate(item.path)}
           >
-            <i className={"bi " + item.icon}></i>
-            <span>{item.label}</span>
+                        <i className={"bi " + item.icon}></i>           {" "}
+            <span>{item.label}</span>         {" "}
           </button>
         ))}
+             {" "}
       </nav>
-      <hr className="nav-divider" />
+            <hr className="nav-divider" />     {" "}
       <button
         className="nav-item-custom nav-item-logout"
         onClick={() => navigate("/login")}
       >
-        <i className="bi bi-box-arrow-right"></i>
-        <span>Logout</span>
+                <i className="bi bi-box-arrow-right"></i>       {" "}
+        <span>Logout</span>     {" "}
       </button>
+         {" "}
     </aside>
   );
 }
 
 /* ---------------- shared bits ---------------- */
-
-function PageHeader({ title, action }) {
-  return (
-    <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
-      <h1 className="page-title">{title}</h1>
-      {action}
-    </div>
-  );
-}
 
 function Field({
   label,
@@ -96,7 +93,8 @@ function Field({
 }) {
   return (
     <div className="mb-3">
-      <div className="field-label">{label}</div>
+            <div className="field-label">{label}</div>
+           {" "}
       <input
         type={type}
         className={"field-input" + (readOnly ? " field-readonly" : "")}
@@ -105,6 +103,7 @@ function Field({
         onChange={onChange}
         readOnly={readOnly}
       />
+         {" "}
     </div>
   );
 }
@@ -114,41 +113,80 @@ function Field({
 function ProfileContent() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(false);
-  const [avatar, setAvatar] = useState(null); // null = show initials
+  const [avatar, setAvatar] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Editable fields (mapped to the users table columns)
   const [form, setForm] = useState({
-    full_name: "Meow meow",
-    gender: "Female",
-    address: "Phnom Penh",
-    phone: "096 168 9999",
-    email: "meowmeow168@gmail.com",
-    username: "meowmeow168",
+    full_name: "",
+    gender: "",
+    address: "",
+    phone: "",
+    email: "",
+    username: "",
     password: "",
   });
 
-  // Read-only account meta (fetched from the server, not editable in the UI)
-  const accountMeta = {
+  const [accountMeta, setAccountMeta] = useState({
     role: "Library Member",
-    is_active: true,
-    is_verified: true,
     status: "active",
-    last_login_at: "Jun 20, 2026 · 09:41 AM",
-    created_at: "Jan 15, 2025",
-    updated_at: "Jun 21, 2026",
-  };
+    last_login_at: "N/A",
+    created_at: "N/A",
+    updated_at: "N/A",
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const res = await getMeAPI();
+        const userData = res.data || res;
+
+        if (userData) {
+          setForm({
+            full_name: userData.full_name || userData.name || "",
+            gender: userData.gender || "",
+            address: userData.address || "",
+            phone: userData.phone || "",
+            email: userData.email || "",
+            username: userData.username || "",
+            password: "",
+          });
+
+          setAccountMeta({
+            role: userData.role || "Library Member",
+            status: userData.status || "active",
+            last_login_at: userData.last_login_at || "Just now",
+            created_at: userData.created_at || "N/A",
+            updated_at: userData.updated_at || "N/A",
+          });
+
+          if (userData.profile_image || userData.avatar) {
+            setAvatar(userData.profile_image || userData.avatar);
+          }
+        }
+      } catch (error) {
+        console.error("Error retrieving user content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const getInitials = (name) =>
     name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : "U";
 
   const handleAvatarClick = () => {
     if (editing) fileInputRef.current?.click();
@@ -162,72 +200,106 @@ function ProfileContent() {
     reader.readAsDataURL(file);
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (!editing) {
       setEditing(true);
       return;
     }
-    // Replace this block with your real API call:
-    // await api.patch("/member/profile", { ...form, profile_image: avatar })
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      setSaving(true);
+
+      const payload = { ...form, profile_image: avatar };
+      if (!payload.password) delete payload.password;
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setEditing(false);
       setToast(true);
       setTimeout(() => setToast(false), 2500);
-    }, 1200);
+    } catch (error) {
+      console.error("Error updates could not save:", error);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "400px" }}
+      >
+               {" "}
+        <div className="spinner-border text-dark" role="status">
+                    <span className="visually-hidden">Loading data...</span>   
+             {" "}
+        </div>
+             {" "}
+      </div>
+    );
+  }
 
   return (
     <>
+           {" "}
       {toast && (
         <div className="save-toast">
-          <i className="bi bi-check-circle-fill"></i>
-          Profile saved successfully
+                    <i className="bi bi-check-circle-fill"></i>          Profile
+          saved successfully        {" "}
         </div>
       )}
-
-      <PageHeader
-        title="My Profile"
-        action={
-          <button
-            className="btn-edit"
-            onClick={handleSaveClick}
-            disabled={saving}
-          >
-            {saving ? (
-              <span className="spinner-sm" />
-            ) : (
-              <i
-                className={"bi " + (editing ? "bi-check2" : "bi-pencil-fill")}
-              ></i>
-            )}
-            {saving ? "Saving..." : editing ? "Save Profile" : "Edit Profile"}
-          </button>
-        }
-      />
-
-      {/* Avatar */}
+           {" "}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+                <h1 className="page-title">My Profile</h1>       {" "}
+        <button
+          className="btn-edit"
+          onClick={handleSaveClick}
+          disabled={saving}
+        >
+                   {" "}
+          {saving ? (
+            <span className="spinner-sm" />
+          ) : (
+            <i
+              className={"bi " + (editing ? "bi-check2" : "bi-pencil-fill")}
+            ></i>
+          )}
+                   {" "}
+          {saving ? "Saving..." : editing ? "Save Profile" : "Edit Profile"}   
+             {" "}
+        </button>
+             {" "}
+      </div>
+            {/* Avatar */}     {" "}
       <div className="text-center my-4">
+               {" "}
         <div
           className={"avatar-outer" + (editing ? " avatar-editable" : "")}
           onClick={handleAvatarClick}
         >
+                   {" "}
           <div className="avatar-wrap">
+                       {" "}
             {avatar ? (
               <img src={avatar} alt="Profile avatar" />
             ) : (
               <div className="avatar-initials">
-                {getInitials(form.full_name || "U")}
+                                {getInitials(form.full_name || "U")}           
+                 {" "}
               </div>
             )}
+                     {" "}
           </div>
+                   {" "}
           {editing && (
             <button type="button" className="avatar-cam" tabIndex={-1}>
-              <i className="bi bi-camera-fill"></i>
+                            <i className="bi bi-camera-fill"></i>         
+               {" "}
             </button>
           )}
+                 {" "}
         </div>
+               {" "}
         <input
           ref={fileInputRef}
           type="file"
@@ -235,55 +307,70 @@ function ProfileContent() {
           className="d-none"
           onChange={handleAvatarChange}
         />
+               {" "}
         <div className="mt-2 fw-semibold" style={{ fontSize: ".95rem" }}>
-          {form.full_name}
+                    {form.full_name}       {" "}
         </div>
+               {" "}
         <div style={{ fontSize: ".8rem", color: "#6b6b6b" }}>
-          {accountMeta.role}
+                    {accountMeta.role}       {" "}
         </div>
-
+               {" "}
         {editing && (
           <div className="avatar-hint">Click the photo to change it</div>
         )}
+             {" "}
       </div>
-
-      {/* ── Section: Personal Information ── */}
-      <div className="section-heading">Personal Information</div>
-
+            {/* ── Section: Personal Information ── */}     {" "}
+      <div className="section-heading">Personal Information</div>     {" "}
       <div className="row">
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Full Name"
             value={form.full_name}
             disabled={!editing}
             onChange={update("full_name")}
           />
+                 {" "}
         </div>
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Gender"
             value={form.gender}
             disabled={!editing}
             onChange={update("gender")}
           />
+                 {" "}
         </div>
+               {" "}
         <div className="col-12">
+                   {" "}
           <Field
             label="Address"
             value={form.address}
             disabled={!editing}
             onChange={update("address")}
           />
+                 {" "}
         </div>
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Phone Number"
             value={form.phone}
             disabled={!editing}
             onChange={update("phone")}
           />
+                 {" "}
         </div>
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Email"
             value={form.email}
@@ -291,22 +378,27 @@ function ProfileContent() {
             onChange={update("email")}
             type="email"
           />
+                 {" "}
         </div>
+             {" "}
       </div>
-
-      {/* ── Section: Account Details ── */}
-      <div className="section-heading mt-2">Account Details</div>
-
+            {/* ── Section: Account Details ── */}     {" "}
+      <div className="section-heading mt-2">Account Details</div>     {" "}
       <div className="row">
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Username"
             value={form.username}
             disabled={!editing}
             onChange={update("username")}
           />
+                 {" "}
         </div>
+               {" "}
         <div className="col-md-6">
+                   {" "}
           <Field
             label="Password"
             value={form.password}
@@ -314,47 +406,65 @@ function ProfileContent() {
             onChange={update("password")}
             type="password"
           />
+                 {" "}
         </div>
+             {" "}
       </div>
-
-      {/* ── Section: Account Status (read-only) ── */}
-      <div className="section-heading mt-2">Account Status</div>
-
+            {/* ── Section: Account Status (read-only) ── */}     {" "}
+      <div className="section-heading mt-2">Account Status</div>     {" "}
       <div className="meta-info-grid">
+               {" "}
         <div className="meta-info-item">
-          <i className="bi bi-clock-history"></i>
+                    <i className="bi bi-clock-history"></i>         {" "}
           <div>
-            <div className="meta-info-label">Last Login</div>
-            <div className="meta-info-value">{accountMeta.last_login_at}</div>
+                        <div className="meta-info-label">Last Login</div>       
+               {" "}
+            <div className="meta-info-value">{accountMeta.last_login_at}</div> 
+                   {" "}
           </div>
+                 {" "}
         </div>
+               {" "}
         <div className="meta-info-item">
-          <i className="bi bi-calendar-plus"></i>
+                    <i className="bi bi-calendar-plus"></i>         {" "}
           <div>
-            <div className="meta-info-label">Member Since</div>
-            <div className="meta-info-value">{accountMeta.created_at}</div>
+                        <div className="meta-info-label">Member Since</div>     
+                 {" "}
+            <div className="meta-info-value">{accountMeta.created_at}</div>     
+               {" "}
           </div>
+                 {" "}
         </div>
+               {" "}
         <div className="meta-info-item">
-          <i className="bi bi-arrow-repeat"></i>
+                    <i className="bi bi-arrow-repeat"></i>         {" "}
           <div>
-            <div className="meta-info-label">Last Updated</div>
-            <div className="meta-info-value">{accountMeta.updated_at}</div>
+                        <div className="meta-info-label">Last Updated</div>     
+                 {" "}
+            <div className="meta-info-value">{accountMeta.updated_at}</div>     
+               {" "}
           </div>
+                 {" "}
         </div>
+               {" "}
         <div className="meta-info-item">
-          <i className="bi bi-shield-check"></i>
+                    <i className="bi bi-shield-check"></i>         {" "}
           <div>
-            <div className="meta-info-label">Account Status</div>
+                        <div className="meta-info-label">Account Status</div>   
+                   {" "}
             <div
               className="meta-info-value"
               style={{ textTransform: "capitalize" }}
             >
-              {accountMeta.status}
+                            {accountMeta.status}           {" "}
             </div>
+                     {" "}
           </div>
+                 {" "}
         </div>
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
@@ -388,25 +498,40 @@ const BORROWED_BOOKS = [
 function BorrowingHistoryContent() {
   return (
     <>
-      <PageHeader title="Borrowing History" />
+           {" "}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+                <h1 className="page-title">Borrowing History</h1>     {" "}
+      </div>
+           {" "}
       <div className="d-flex flex-column gap-2">
+               {" "}
         {BORROWED_BOOKS.map((b) => (
           <div className="list-row" key={b.title}>
+                       {" "}
             <div className="list-row-icon">
-              <i className="bi bi-journal-bookmark"></i>
+                            <i className="bi bi-journal-bookmark"></i>         
+               {" "}
             </div>
+                       {" "}
             <div className="flex-grow-1">
-              <div className="list-row-title">{b.title}</div>
+                            <div className="list-row-title">{b.title}</div>     
+                     {" "}
               <div className="list-row-sub">
-                {b.author} · Borrowed {b.borrowedOn} · Due {b.dueOn}
+                                {b.author} · Borrowed {b.borrowedOn} · Due{" "}
+                {b.dueOn}             {" "}
               </div>
+                         {" "}
             </div>
+                       {" "}
             <span className={"badge-status badge-" + b.status.toLowerCase()}>
-              {b.status}
+                            {b.status}           {" "}
             </span>
+                     {" "}
           </div>
         ))}
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
@@ -422,27 +547,40 @@ const DUE_ITEMS = [
 function DueDateContent() {
   return (
     <>
-      <PageHeader title="Due Date" />
+           {" "}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+                <h1 className="page-title">Due Date</h1>     {" "}
+      </div>
+           {" "}
       <div className="d-flex flex-column gap-2">
+               {" "}
         {DUE_ITEMS.map((d) => (
           <div className="list-row" key={d.title}>
+                       {" "}
             <div className="list-row-icon">
-              <i className="bi bi-calendar-event"></i>
+                            <i className="bi bi-calendar-event"></i>         
+               {" "}
             </div>
+                       {" "}
             <div className="flex-grow-1">
-              <div className="list-row-title">{d.title}</div>
-              <div className="list-row-sub">Due {d.dueOn}</div>
+                            <div className="list-row-title">{d.title}</div>     
+                      <div className="list-row-sub">Due {d.dueOn}</div>         
+               {" "}
             </div>
+                       {" "}
             <span
               className={
                 "badge-status badge-" + d.status.toLowerCase().replace(" ", "-")
               }
             >
-              {d.status}
+                            {d.status}           {" "}
             </span>
+                     {" "}
           </div>
         ))}
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
@@ -458,25 +596,38 @@ function FineContent() {
   const total = FINES.reduce((sum, f) => sum + f.amount, 0);
   return (
     <>
-      <PageHeader title="Fine" />
-      <div className="fine-total-card mb-3">
-        <div className="list-row-sub">Total outstanding</div>
-        <div className="fine-total-amount">${total.toFixed(2)}</div>
+           {" "}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+                <h1 className="page-title">Fine</h1>     {" "}
       </div>
+           {" "}
+      <div className="fine-total-card mb-3">
+                <div className="list-row-sub">Total outstanding</div>       {" "}
+        <div className="fine-total-amount">${total.toFixed(2)}</div>     {" "}
+      </div>
+           {" "}
       <div className="d-flex flex-column gap-2">
+               {" "}
         {FINES.map((f, i) => (
           <div className="list-row" key={i}>
+                       {" "}
             <div className="list-row-icon">
-              <i className="bi bi-cash-coin"></i>
+                            <i className="bi bi-cash-coin"></i>           {" "}
             </div>
+                       {" "}
             <div className="flex-grow-1">
-              <div className="list-row-title">{f.book}</div>
-              <div className="list-row-sub">{f.reason}</div>
+                            <div className="list-row-title">{f.book}</div>     
+                      <div className="list-row-sub">{f.reason}</div>         
+               {" "}
             </div>
-            <span className="fine-amount">${f.amount.toFixed(2)}</span>
+                       {" "}
+            <span className="fine-amount">${f.amount.toFixed(2)}</span>       
+             {" "}
           </div>
         ))}
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
@@ -505,23 +656,35 @@ const NOTIFICATIONS = [
 function NotificationsContent() {
   return (
     <>
-      <PageHeader title="Notifications" />
+           {" "}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+                <h1 className="page-title">Notifications</h1>     {" "}
+      </div>
+           {" "}
       <div className="d-flex flex-column gap-2">
+               {" "}
         {NOTIFICATIONS.map((n, i) => (
           <div className="list-row" key={i}>
+                       {" "}
             <div className="list-row-icon">
-              <i className="bi bi-bell"></i>
+                            <i className="bi bi-bell"></i>           {" "}
             </div>
+                       {" "}
             <div className="flex-grow-1">
+                           {" "}
               <div className="list-row-title">
-                {n.message}
-                {n.unread && <span className="notif-dot" />}
+                                {n.message}               {" "}
+                {n.unread && <span className="notif-dot" />}             {" "}
               </div>
-              <div className="list-row-sub">{n.time}</div>
+                            <div className="list-row-sub">{n.time}</div>       
+                 {" "}
             </div>
+                     {" "}
           </div>
         ))}
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
@@ -531,71 +694,74 @@ function NotificationsContent() {
 export default function Profile() {
   return (
     <>
+           {" "}
       <style>{`
 :root {
-  --bg-page:      #ffffff;
-  --card-bg:      #ffffff;
-  --card-border:  #e2e2e2;
-  --field-bg:     #ffffff;
-  --field-border: #d4d4d4;
-  --text:         #000000;
-  --text-muted:   #6b6b6b;
-  --accent:       #000000;
-  --accent-text:  #ffffff;
-  --hover-bg:     #f2f2f2;
+  --bg-page:      #ffffff;
+  --card-bg:      #ffffff;
+  --card-border:  #e2e2e2;
+  --field-bg:     #ffffff;
+  --field-border: #d4d4d4;
+  --text:         #000000;
+  --text-muted:   #6b6b6b;
+  --accent:       #000000;
+  --accent-text:  #ffffff;
+  --hover-bg:     #f2f2f2;
 }
 
 body {
-  margin: 0;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color: var(--text);
-  background: var(--bg-page);
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--bg-page);
 }
 
 .app-wrapper {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
-  background: var(--bg-page);
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--bg-page);
 }
 
 .dashboard-shell {
-  width: 100%;
-  max-width: 1080px;
+  width: 100%;
+  max-width: 1080px;
 }
 
 /* ── Sidebar ── */
 .sidebar-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 28px;
-  padding: 1.75rem 1.1rem;
-  box-shadow: 0 10px 30px -18px rgba(0,0,0,.12);
-  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  padding: 1.75rem 1.1rem;
+  box-shadow: 0 10px 30px -18px rgba(0,0,0,.12);
+  width: 100%;
 }
 @media (min-width: 992px) {
-  .sidebar-card { width: 260px; flex: 0 0 260px; }
+  .sidebar-card { width: 260px; flex: 0 0 260px; }
 }
 
 .nav-item-custom {
-  display: flex;
-  align-items: center;
-  gap: .65rem;
-  padding: .65rem .9rem;
-  border-radius: 14px;
-  margin-bottom: .4rem;
-  color: var(--text);
-  font-size: .92rem;
-  font-weight: 500;
-  border: none;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-  transition: background .15s ease, color .15s ease;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .65rem .9rem;
+  border-radius: 14px;
+  margin-bottom: .4rem;
+  color: var(--text);
+  font-size: .92rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background .15s ease, color .15s ease;
+  cursor: pointer;
 }
 .nav-item-custom i { font-size: 1.05rem; width: 20px; text-align: center; color: var(--text-muted); }
 .nav-item-custom:hover { background: var(--hover-bg); }
@@ -609,154 +775,155 @@ body {
 
 /* ── Main card ── */
 .main-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 28px;
-  padding: 2rem 2.25rem;
-  box-shadow: 0 10px 30px -18px rgba(0,0,0,.12);
-  min-height: 520px;
-  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  padding: 2rem 2.25rem;
+  box-shadow: 0 10px 30px -18px rgba(0,0,0,.12);
+  min-height: 520px;
+  position: relative;
+  max-width: 100%;
 }
 
 .page-title { font-size: 1.45rem; font-weight: 700; margin: 0; color: var(--text); }
 
 /* ── Edit button ── */
 .btn-edit {
-  background: var(--accent);
-  color: var(--accent-text);
-  border: none;
-  border-radius: 10px;
-  padding: .5rem 1.1rem;
-  font-size: .88rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  transition: background .15s ease;
-  cursor: pointer;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  border-radius: 10px;
+  padding: .5rem 1.1rem;
+  font-size: .88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  transition: background .15s ease;
+  cursor: pointer;
 }
 .btn-edit:hover { background: #222; color: #fff; }
 .btn-edit:disabled { opacity: .7; cursor: default; }
 
 /* ── Spinner ── */
 .spinner-sm {
-  width: 13px; height: 13px;
-  border: 2px solid rgba(255,255,255,.35);
-  border-top-color: #fff;
-  border-radius: 50%;
-  display: inline-block;
-  animation: spin .7s linear infinite;
+  width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin .7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Toast ── */
 .save-toast {
-  position: fixed;
-  top: 24px; right: 24px;
-  z-index: 2000;
-  background: #000;
-  color: #fff;
-  padding: .7rem 1.1rem;
-  border-radius: 10px;
-  font-size: .88rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  box-shadow: 0 10px 25px -8px rgba(0,0,0,.4);
-  animation: toast-in .25s ease;
+  position: fixed;
+  top: 24px; right: 24px;
+  z-index: 2000;
+  background: #000;
+  color: #fff;
+  padding: .7rem 1.1rem;
+  border-radius: 10px;
+  font-size: .88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  box-shadow: 0 10px 25px -8px rgba(0,0,0,.4);
+  animation: toast-in .25s ease;
 }
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Avatar ── */
 .avatar-outer {
-  position: relative;
-  width: 108px; height: 108px;
-  margin: 0 auto;
+  position: relative;
+  width: 108px; height: 108px;
+  margin: 0 auto;
 }
 .avatar-wrap {
-  width: 108px; height: 108px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 4px solid #fff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.15);
+  width: 108px; height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.15);
 }
 .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .avatar-initials {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  background: #000;
-  color: #fff;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: .02em;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 .avatar-editable { cursor: pointer; }
 .avatar-editable:hover .avatar-wrap img,
 .avatar-editable:hover .avatar-initials { filter: brightness(.8); }
 .avatar-hint { font-size: .78rem; color: var(--text-muted); margin-top: .5rem; }
 .avatar-cam {
-  position: absolute;
-  bottom: -4px; right: -4px;
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-text);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .8rem;
-  border: 3px solid #fff;
-  padding: 0;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+  position: absolute;
+  bottom: -4px; right: -4px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem;
+  border: 3px solid #fff;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
 }
 
 /* ── Section headings ── */
 .section-heading {
-  font-size: .78rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  border-top: 1px solid var(--card-border);
-  padding-top: 1.25rem;
-  margin-bottom: .75rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  border-top: 1px solid var(--card-border);
+  padding-top: 1.25rem;
+  margin-bottom: .75rem;
 }
 
 /* ── Fields ── */
 .field-label { font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .35rem; }
 .field-input {
-  width: 100%;
-  background: var(--field-bg);
-  border: 1.5px solid var(--field-border);
-  border-radius: 12px;
-  padding: .6rem .9rem;
-  font-size: .9rem;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s ease, background .15s ease;
+  width: 100%;
+  background: var(--field-bg);
+  border: 1.5px solid var(--field-border);
+  border-radius: 12px;
+  padding: .6rem .9rem;
+  font-size: .9rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s ease, background .15s ease;
 }
 .field-input:disabled { color: var(--text); opacity: 1; cursor: default; }
-.field-input:focus    { border-color: #000; background: #fff; }
-.field-readonly       { background: var(--hover-bg) !important; color: var(--text-muted) !important; cursor: not-allowed; }
+.field-input:focus    { border-color: #000; background: #fff; }
+.field-readonly       { background: var(--hover-bg) !important; color: var(--text-muted) !important; cursor: not-allowed; }
 
 /* ── Account meta grid ── */
 .meta-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: .75rem;
-  margin-bottom: .5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: .75rem;
+  margin-bottom: .5rem;
 }
 .meta-info-item {
-  display: flex;
-  align-items: flex-start;
-  gap: .65rem;
-  padding: .75rem .9rem;
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  background: var(--hover-bg);
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  padding: .75rem .9rem;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: var(--hover-bg);
 }
 .meta-info-item > i { font-size: 1.1rem; color: var(--text-muted); margin-top: .1rem; flex: 0 0 auto; }
 .meta-info-label { font-size: .75rem; color: var(--text-muted); font-weight: 600; }
@@ -764,35 +931,35 @@ body {
 
 /* ── List rows (Borrowing / Due Date / Fine / Notifications) ── */
 .list-row {
-  display: flex;
-  align-items: flex-start;
-  gap: .85rem;
-  padding: .85rem 1rem;
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  transition: background .15s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  padding: .85rem 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  transition: background .15s ease;
 }
 .list-row:hover { background: var(--hover-bg); }
 .list-row-icon {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-  color: var(--text);
-  flex: 0 0 auto;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  color: var(--text);
+  flex: 0 0 auto;
 }
 .list-row-title { font-weight: 600; font-size: .92rem; color: var(--text); position: relative; padding-right: 14px; }
-.list-row-sub   { font-size: .8rem; color: var(--text-muted); margin-top: .15rem; }
+.list-row-sub   { font-size: .8rem; color: var(--text-muted); margin-top: .15rem; }
 
 .badge-status {
-  font-size: .72rem;
-  font-weight: 700;
-  padding: .3rem .65rem;
-  border-radius: 999px;
-  border: 1px solid var(--text);
-  white-space: nowrap;
-  align-self: center;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .3rem .65rem;
+  border-radius: 999px;
+  border: 1px solid var(--text);
+  white-space: nowrap;
+  align-self: center;
 }
 .badge-returned, .badge-upcoming { border-color: var(--card-border); color: var(--text-muted); }
 .badge-active, .badge-overdue, .badge-due-soon { border-color: var(--text); color: var(--text); font-weight: 800; }
@@ -804,37 +971,49 @@ body {
 
 /* ── Notification dot ── */
 .notif-dot {
-  display: inline-block;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--text);
-  margin-left: 8px;
-  vertical-align: middle;
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text);
+  margin-left: 8px;
+  vertical-align: middle;
 }
-      `}</style>
-
+      `}</style>
+           {" "}
       <div className="app-wrapper">
+               {" "}
         <div className="dashboard-shell d-flex flex-column flex-lg-row gap-3 gap-lg-4">
-          <Sidebar />
+                    <Sidebar />         {" "}
           <main className="main-card flex-grow-1">
+                       {" "}
             <Routes>
-              <Route index element={<ProfileContent />} />
+                            <Route index element={<ProfileContent />} />
+                           {" "}
               <Route path="profileMember" element={<ProfileContent />} />
+                           {" "}
               <Route
                 path="borrowing-history"
                 element={<BorrowingHistoryContent />}
               />
+                           {" "}
               <Route path="due-date" element={<DueDateContent />} />
-              <Route path="fine" element={<FineContent />} />
+                            <Route path="fine" element={<FineContent />} />
+                           {" "}
               <Route path="notifications" element={<NotificationsContent />} />
+                           {" "}
               <Route
                 path="*"
                 element={<Navigate to="profileMember" replace />}
               />
+                         {" "}
             </Routes>
+                     {" "}
           </main>
+                 {" "}
         </div>
+             {" "}
       </div>
+         {" "}
     </>
   );
 }
