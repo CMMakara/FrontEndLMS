@@ -29,6 +29,8 @@ import Register from '../page/member/Register'
 import PageOTP from '../page/member/PageOTP'
 import ForgotPassword from '../page/member/ForgotPassword'
 import HelpPage from '../page/member/HelpPage'
+import PageOTPForgot from '../page/member/PageOTPForgot'
+import ResetPassword from '../page/member/ResetPassword'
 
 function AppRoutes() {
   return (
@@ -38,6 +40,8 @@ function AppRoutes() {
         <Route path='/register' element={<Register/>} />
         <Route path='/verify-otp' element={<PageOTP/>} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path='/resetPassword' element={<ResetPassword/>} />
+        <Route path='/otp-forgot' element={<PageOTPForgot/>} />
         <Route path='/admin/login' element={<LoginAdminpage/>} />
         <Route path='/librarian/login' element={<LoginLibrarianpage/>} />
         {/* route Member */}

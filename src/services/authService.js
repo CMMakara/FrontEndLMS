@@ -58,3 +58,20 @@ export const resendOtpAPI = async (email) => {
     throw error;
   }
 };
+
+export const forgotPasswordAPI = async (email) =>{
+  try {
+    const res = await api.put("/auth/resend-Email", {
+      email
+    });
+
+    return res.data.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const resetPasswordAPI = async (data) => {
+  const res = await api.post("/auth/reset-password", data);
+  return res.data;
+};
