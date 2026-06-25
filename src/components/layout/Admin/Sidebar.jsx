@@ -9,7 +9,6 @@ const menuItems = [
   { to: "/admin/category", icon: "bi-collection-fill", label: "Category" },
   { to: "/admin/authors", icon: "bi-person-badge", label: "Authors" },
   { to: "/admin/publishers", icon: "bi-building", label: "Publishers" },
-  { to: "/admin/reports", icon: "bi-bar-chart-line", label: "Reports" },
 ];
 
 function Sidebar() {

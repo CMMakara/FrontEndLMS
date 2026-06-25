@@ -34,6 +34,9 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<PageOTP />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/login" element={<LoginAdminpage />} />
         <Route path="/librarian/login" element={<LoginLibrarianpage />} />
         {/* route Member */}
@@ -49,6 +52,9 @@ function AppRoutes() {
           <Route path="/member/profile/*" element={<Profiel />} />
           <Route path="/member/books" element={<BookListPage />} />
           <Route path="/member/books/:id" element={<BookDetail />} />
+          {/* <Route path="/member/profile/*" element={<Profiel />} /> */}
+          <Route path="/member/bookDetail" element={<BookDetalt />} />
+          <Route path="/member/help" element={<HelpPage />} />
         </Route>
         {/* route Admin */}
         <Route

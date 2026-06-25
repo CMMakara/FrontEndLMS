@@ -1,5 +1,5 @@
-import { loginUser, logoutUserAPI } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { loginUser, logoutUserAPI, registerAPI, resendOtpAPI, verifyOtpAPI } from "../services/authService";
+import { data, useNavigate } from "react-router-dom";
 import { setAuth } from "../utils/auth";
 import { validateLogin } from "../validations/LoginSchema";
 import { useState } from "react";
@@ -29,8 +29,8 @@ const useUserAuth = () => {
 
     try {
       const res = await loginUser(payload);
-      if(res.result  === false){
-        showToast("Invalid email or password" , "error")
+      if (res.result === false) {
+        showToast("Invalid email or password", "error")
         setErrors({});
         return false;
       }
@@ -49,7 +49,7 @@ const useUserAuth = () => {
         navigate("/");
       }
 
-      showToast("Login successfully" , "success")
+      showToast("Login successfully", "success")
       return true;
     } catch (error) {
       console.log(error);
@@ -77,7 +77,71 @@ const useUserAuth = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       showToast("Logout failed, but session cleared", "warning");
-    } 
+    }
+  };
+
+  const register = async (data) => {
+    try {
+      let res = await registerAPI(data)
+      if (res.result === false) {
+        console.log(res?.data)
+        showToast(res?.data || res?.messag || "Register Failed", "error");
+        return false
+      }
+      showToast("Register Account Member success", "success");
+      return res.data
+    } catch (error) {
+      console.log(error)
+      return false;
+    }
+  }
+
+  const verifyOtp = async (token) => {
+    try {
+      const res = await verifyOtpAPI(token);
+
+      if (res.result === false) {
+        showToast(res?.data || "Invalid OTP", "error");
+        return false;
+      }
+
+      showToast("OTP verified successfully", "success");
+      return res?.data || true;
+    } catch (error) {
+      console.log(error);
+      showToast(
+        error.response?.data?.message || "Verification failed",
+        "error"
+      );
+      return false;
+    }
+  };
+  const resendOtp = async (email) => {
+    try {
+      const res = await resendOtpAPI(email);
+
+      const message = res?.msg || res?.data;
+
+      if (!res?.result) {
+        showToast(message || "Failed to resend OTP", "error");
+        return false;
+      }
+
+      showToast(message || "OTP resent successfully", "success");
+      return true;
+
+    } catch (error) {
+      console.log(error);
+
+      showToast(
+        error?.response?.data?.msg ||
+        error?.response?.data?.data ||
+        "Failed to resend OTP",
+        "error"
+      );
+
+      return false;
+    }
   };
 
   return {
@@ -85,7 +149,10 @@ const useUserAuth = () => {
     errors,
     setErrors,
     clearError,
-    logout
+    logout,
+    register,
+    verifyOtp,
+    resendOtp
   };
 };
 

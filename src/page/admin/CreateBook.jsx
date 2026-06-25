@@ -65,7 +65,7 @@ export default function CreateBook() {
   const { publishers } = usePublisher()
   const { createBook, uploadImageBook } = useBooks()
   const navigate = useNavigate();
-  
+
 
   const setField = (key, value) => {
     setForm((prev) => ({
@@ -264,7 +264,7 @@ export default function CreateBook() {
             </div>
 
             {/* ── THREE SECTION COLUMNS ── */}
-            <div className="row g-3 mb-3">
+            <div className="row  mb-3">
 
               {/* Relations */}
               <div className="col-lg-4">
@@ -280,12 +280,16 @@ export default function CreateBook() {
                         const value = e.target.value;
                         setField("category_id", value);
                       }}
-                      options={
-                        category?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Category --"
+                        },
+                        ...(category?.map((data) => ({
                           value: data.id,
                           label: data.category_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                   {/* Author */}
@@ -299,12 +303,16 @@ export default function CreateBook() {
                         const value = e.target.value;
                         setField("author_id", value);
                       }}
-                      options={
-                        author?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Author --"
+                        },
+                        ...(author?.map((data) => ({
                           value: data.id,
                           label: data.author_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                   {/* Publisher */}
@@ -318,12 +326,16 @@ export default function CreateBook() {
                         const value = e.target.value;
                         setField("publisher_id", value);
                       }}
-                      options={
-                        publishers?.map((data) => ({
+                      options={[
+                        {
+                          value: "",
+                          label: "-- Select Publisher --"
+                        },
+                        ...(publishers?.map((data) => ({
                           value: data.id,
                           label: data.publisher_name
-                        })) || []
-                      }
+                        })) || [])
+                      ]}
                     />
                   </div>
                 </Section>
@@ -461,7 +473,7 @@ export default function CreateBook() {
                 type="button"
                 className="btn btn-light px-4"
                 style={{ fontSize: 13, borderRadius: 10 }}
-                onClick={()=> navigate("/admin/books")}
+                onClick={() => navigate("/admin/books")}
               >
                 Cancel
               </button>

@@ -21,3 +21,40 @@ export const logoutUserAPI = async () =>{
     throw error;
   }
 }
+
+export const registerAPI = async (data) =>{
+  try {
+    let res = await api.post('/auth/register' , data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    throw error;
+  }
+}
+
+export const verifyOtpAPI = async (token) => {
+  try {
+    const res = await api.get('/auth/verify-Email', {
+      params: {
+        token
+      }
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const resendOtpAPI = async (email) => {
+  try {
+    const res = await api.put("/auth/resend-Email", {
+      email: email,
+    });
+
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
