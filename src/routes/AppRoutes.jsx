@@ -54,6 +54,9 @@ function AppRoutes() {
           }
         >
           <Route index element={<Homepage />} />
+          <Route path="/member/profile/*" element={<Profiel />} />
+          <Route path="/member/books" element={<BookListPage />} />
+          <Route path="/member/books/:id" element={<BookDetail />} />
           {/* <Route path="/member/profile/*" element={<Profiel />} /> */}
           <Route path="/member/bookDetail" element={<BookDetalt />} />
           <Route path="/member/help" element={<HelpPage />} />
@@ -90,7 +93,10 @@ function AppRoutes() {
           <Route path="/librarian/Member" element={<Member />} />
           <Route path="/librarian/issueBooks" element={<IssueBooks />} />
           <Route path="/librarian/returnBooks" element={<ReturnBooks />} />
-          <Route path="/librarian/borrow-requests"element={<BorrowRequests />}/>
+          <Route
+            path="/librarian/borrow-requests"
+            element={<BorrowRequests />}
+          />
           <Route path="/librarian/profile" element={<ProfileLibrarian />} />
         </Route>
       </Routes>
