@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import useUser from "../../../hook/useUsers";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { userProfile } = useUser()
 
-  // Detect scroll to toggle navbar style
+  const imageUrl = userProfile?.profile_image
+    ? `${import.meta.env.VITE_API_URL}${userProfile?.profile_image}`
+    : null;
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -111,10 +116,14 @@ function Navbar() {
         <div className="container">
 
           {/* Logo */}
-          <a className="navbar-brand d-flex align-items-center fw-bold fs-4 text-white" style={{ letterSpacing: "0.5px" }} href="#">
+          <Link
+            to="/"
+            className="navbar-brand d-flex align-items-center fw-bold fs-4 text-white"
+            style={{ letterSpacing: "0.5px" }}
+          >
             <i className="bi bi-mortarboard-fill me-2 fs-3"></i>
             LMS
-          </a>
+          </Link>
 
           {/* Mobile Toggle */}
           <button
@@ -130,13 +139,23 @@ function Navbar() {
 
             {/* Menu Links */}
             <ul className="navbar-nav me-auto ms-lg-4 align-items-center">
-              {["HOME", "BOOKS", "FAQ & ABOUT US"].map((item) => (
-                <li className="nav-item m-1 m-lg-0 mx-lg-1" key={item}>
-                  <a href="#" className="nav-link text-white fw-semibold px-3 py-2 rounded-pill">
-                    {item}
-                  </a>
-                </li>
-              ))}
+              <li className="nav-item">
+                <Link to="/" className="nav-link text-white fw-semibold">
+                  HOME
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link to="/member/books" className="nav-link text-white fw-semibold">
+                  BOOKS
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link to="/member/help" className="nav-link text-white fw-semibold">
+                  FAQ & ABOUT US
+                </Link>
+              </li>
             </ul>
 
             {/* Actions (Notifications & Profile) */}
@@ -179,18 +198,22 @@ function Navbar() {
               <div className="dropdown">
                 <button className="btn p-0 border-0 bg-transparent shadow-none" data-bs-toggle="dropdown">
                   <img
-                    src="https://i.pravatar.cc/40"
+                    src={imageUrl}
                     alt="Profile"
-                    className="profile-img rounded-circle border border-2 border-white border-opacity-50 object-fit-cover"
+                    className="rounded-circle border border-2 border-white object-fit-cover"
                     style={{ width: "45px", height: "45px" }}
+                    onError={(e) => {
+                      e.target.src = "https://i.pravatar.cc/40";
+                    }}
                   />
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-3">
                   <li>
-                    <a className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2" href="#">
+
+                    <Link to="/member/profile" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2">
                       <i className="bi bi-person-circle"></i>
                       Profile
-                    </a>
+                    </Link>
                   </li>
 
                   <li>

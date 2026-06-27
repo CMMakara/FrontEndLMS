@@ -31,6 +31,9 @@ import ForgotPassword from '../page/member/ForgotPassword'
 import HelpPage from '../page/member/HelpPage'
 import PageOTPForgot from '../page/member/PageOTPForgot'
 import ResetPassword from '../page/member/ResetPassword'
+import ProfileMember from '../page/member/Profiel'
+import BookListPage from '../page/member/BookListPage'
+
 
 function AppRoutes() {
   return (
@@ -54,11 +57,9 @@ function AppRoutes() {
           }
         >
           <Route index element={<Homepage />} />
-          <Route path="/member/profile/*" element={<Profiel />} />
+          <Route path="/member/profile/*" element={<ProfileMember />} />
           <Route path="/member/books" element={<BookListPage />} />
-          <Route path="/member/books/:id" element={<BookDetail />} />
-          {/* <Route path="/member/profile/*" element={<Profiel />} /> */}
-          <Route path="/member/bookDetail" element={<BookDetalt />} />
+          <Route path="/member/books/:id" element={<BookDetalt />} />
           <Route path="/member/help" element={<HelpPage />} />
         </Route>
         {/* route Admin */}

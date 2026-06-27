@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { approveBorrowAPI, getAllBorrowRequestAPI, rejectBorrowAPI } from "../services/borrowRequest"
+import { approveBorrowAPI, borrowsRequestAPI, getAllBorrowRequestAPI, rejectBorrowAPI } from "../services/borrowRequest"
 import { useToast } from '../context/ToastContext.jsx'
 
 const useBorrowRequest = ({ search = "", perPage = 5, } = {}) =>{
@@ -61,6 +61,20 @@ const useBorrowRequest = ({ search = "", perPage = 5, } = {}) =>{
     }
   }
 
+  const borrowRequest = async(data) =>{
+    try {
+      let res = await borrowsRequestAPI(data)
+      if(res.result === false){
+        showToast(res?.message || res?.data || 'borrow book Failed', "error");
+        return false
+      }
+      showToast("Borrow book success", "success")
+      return res.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     getAllBorrowRequest()
   }, [search, perPage , page])
@@ -68,7 +82,8 @@ const useBorrowRequest = ({ search = "", perPage = 5, } = {}) =>{
     borrowsRequest,
     getAllBorrowRequest,
     approveBorrow,
-    rejectBorrow
+    rejectBorrow,
+    borrowRequest
   }
 }
 

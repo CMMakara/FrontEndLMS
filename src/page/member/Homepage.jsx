@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import Card from '../../components/ui/Card'
 import useBooks from "../../hook/useBooks";
 import useCategory from '../../hook/useCategory'
-
+import Modal from '../../components/ui/Modal'
+import Input from '../../components/ui/Input'
+import useBorrowRequest from "../../hook/useBorrowRequest";
+import { useNavigate } from "react-router-dom";
 
 const CATEGORIES = [
   { id: 1, name: "Science", icon: "bi bi-gear", count: 142 },
@@ -19,9 +22,10 @@ const STEPS = [
   { num: "04", icon: "bi-arrow-return-left", title: "Return", desc: "Return them anytime." },
 ];
 
-function BookCard({ book, showBadge }) {
+function BookCard({ book, showBadge, openModal }) {
   const [borrowed, setBorrowed] = useState(false);
   const [hover, setHover] = useState(false);
+  const navigate = useNavigate()
 
   const imageUrl = `${import.meta.env.VITE_API_URL}${book.thumbnail}`;
 
@@ -120,7 +124,7 @@ function BookCard({ book, showBadge }) {
       </div>
 
       <div className="card-footer bg-white border-0 pb-4 px-4 pt-1 d-flex gap-2">
-        <button
+        <button onClick={()=> navigate(`/member/books/${book.id}`)}
           className="btn rounded-pill fw-semibold border shadow-none w-50"
           style={{ color: "#475569", backgroundColor: "transparent", borderColor: "#e2e8f0" }}
           onMouseEnter={(e) => { e.target.style.backgroundColor = "#f8fafc"; }}
@@ -132,7 +136,7 @@ function BookCard({ book, showBadge }) {
         <button
           className="btn w-50 rounded-pill fw-semibold shadow-sm text-white border-0"
           disabled={book.available_copies <= 0}
-          onClick={() => setBorrowed(true)}
+          onClick={() => openModal(book)}
           style={{
             background: borrowed
               ? "#10b981"
@@ -157,7 +161,11 @@ export default function Homepage() {
   const [query, setQuery] = useState("");
   const [faqOpen, setFaqOpen] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { books } = useBooks();
+  const { books ,getAllBooks} = useBooks();
+  const [isModal, setIsModal] = useState(false)
+  const [form, setForm] = useState({ note: '' })
+  const { borrowRequest } = useBorrowRequest()
+  const [selectedBook, setSelectedBook] = useState(null);
   const { category } = useCategory(1, { per_page: 10000 })
   const trendingBooks = books?.filter(
     (book) => book.available_copies > 0 && book.available_copies < 5
@@ -166,10 +174,34 @@ export default function Homepage() {
     acc[book.category_id] = (acc[book.category_id] || 0) + 1;
     return acc;
   }, {});
+  const openModal = (book) => {
+    form.note = ""
+    setSelectedBook(book);
+    setIsModal(true)
+  }
+  const handleBorrow = async () => {
+    console.log("book id:", selectedBook?.id);
+    if (!selectedBook) return;
+
+    const payload = {
+      book_id: selectedBook.id,
+      note: form.note
+    }
+    await borrowRequest(payload)
+
+    setIsModal(false)
+    setForm({ note: "" });
+    await getAllBooks()
+  };
   useEffect(() => {
     setTimeout(() => setLoading(false), 800);
   }, []);
 
+  useEffect(() => {
+    if (selectedBook) {
+      console.log("selected book_id:", selectedBook.id);
+    }
+  }, [selectedBook]);
   const faqs = [
     { q: "How many books can I borrow?", a: "You can borrow up to 5 books at a time with a standard account." },
     { q: "What is the borrow duration?", a: "The standard borrow duration is 14 days, with an option to renew if there are no holds." },
@@ -250,7 +282,7 @@ export default function Homepage() {
         <div className="row g-4">
           {books?.slice(0, 8).map((book, i) => (
             <div key={book.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
-              <BookCard book={book} showBadge={i < 2} />
+              <BookCard book={book} showBadge={i < 2} openModal={openModal} />
             </div>
           ))}
         </div>
@@ -335,7 +367,116 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+      {/* modal */}
+      <Modal
+        isOpen={isModal}
+        onClose={() => setIsModal(false)}
+        title='Borrow books'
+        onSave={handleBorrow}
+        saveText="Borrow"
+        btnColorSave="btn-success"
+        children={
+          <div className="container-fluid">
+            <div className="row">
+              {/* Book Cover */}
+              <div className="col-md-4 text-center mb-3">
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${selectedBook?.thumbnail}`}
+                  alt={selectedBook?.book_title}
+                  className="img-fluid rounded shadow"
+                  style={{
+                    maxHeight: "260px",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
 
+              {/* Book Information */}
+              <div className="col-md-8">
+                <h4 className="fw-bold">{selectedBook?.book_title}</h4>
+
+                <div className="row mt-3">
+                  <div className="col-6 mb-2">
+                    <strong>Author</strong>
+                    <p className="text-muted mb-0">{selectedBook?.author_name}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Category</strong>
+                    <p className="text-muted mb-0">{selectedBook?.category_name}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>ISBN</strong>
+                    <p className="text-muted mb-0">{selectedBook?.isbn}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Edition</strong>
+                    <p className="text-muted mb-0">{selectedBook?.edition}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Published</strong>
+                    <p className="text-muted mb-0">{selectedBook?.publish_year}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Language</strong>
+                    <p className="text-muted mb-0">{selectedBook?.language}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Pages</strong>
+                    <p className="text-muted mb-0">{selectedBook?.pages}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Shelf</strong>
+                    <p className="text-muted mb-0">{selectedBook?.shelf_location}</p>
+                  </div>
+
+                  <div className="col-12 mb-2">
+                    <strong>Status</strong>
+                    <span
+                      className={`badge ms-2 ${selectedBook?.status === "available"
+                        ? "bg-success"
+                        : "bg-danger"
+                        }`}
+                    >
+                      {selectedBook?.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <strong>Description</strong>
+                  <p className="text-muted">
+                    {selectedBook?.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            {/* Borrow Form */}
+            <Input
+              width="100%"
+              label="Borrow Note"
+              name="borrow_note"
+              placeholder="Enter borrow note..."
+              value={form.note}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  note: e.target.value,
+                })
+              }
+            />
+          </div>
+        }
+      />
     </div>
   );
 }

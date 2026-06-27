@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-// ── Imported your real API services ──
 import { getBooksByIdAPI, getAllBooksAPI } from "../../services/booksService";
+import Modal from '../../components/ui/Modal'
+import Input from '../../components/ui/Input'
+import useBorrowRequest from "../../hook/useBorrowRequest";
 
 /* ── Helpers ── */
 function getInitials(title) {
@@ -21,46 +23,28 @@ function availVariant(available, total) {
   return "available";
 }
 
-/* ── Small sub-components ── */
+/* ── Small sub-components using Bootstrap ── */
 function AvailDot({ available, total }) {
   const v = availVariant(available, total);
   const colors = {
-    available: "#639922",
-    limited: "#BA7517",
-    unavailable: "#E24B4A",
+    available: "bg-success",
+    limited: "bg-warning",
+    unavailable: "bg-danger",
   };
   return (
     <span
-      style={{
-        width: 7,
-        height: 7,
-        borderRadius: "50%",
-        background: colors[v],
-        display: "inline-block",
-        flexShrink: 0,
-      }}
+      className={`d-inline-block rounded-circle ${colors[v]}`}
+      style={{ width: 8, height: 8, flexShrink: 0 }}
     />
   );
 }
 
 function AvailBadge({ available, total }) {
   const v = availVariant(available, total);
-  const styles = {
-    available: {
-      background: "#EAF3DE",
-      color: "#3B6D11",
-      border: "0.5px solid #C0DD97",
-    },
-    limited: {
-      background: "#FAEEDA",
-      color: "#633806",
-      border: "0.5px solid #FAC775",
-    },
-    unavailable: {
-      background: "#FCEBEB",
-      color: "#791F1F",
-      border: "0.5px solid #F7C1C1",
-    },
+  const badgeClasses = {
+    available: "bg-success-subtle text-success border border-success-subtle",
+    limited: "bg-warning-subtle text-warning-emphasis border border-warning-subtle",
+    unavailable: "bg-danger-subtle text-danger border border-danger-subtle",
   };
   const labels = {
     available: "Available",
@@ -73,19 +57,8 @@ function AvailBadge({ available, total }) {
     unavailable: "bi-x-circle",
   };
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 5,
-        fontSize: 11,
-        fontWeight: 600,
-        padding: "3px 10px",
-        borderRadius: 999,
-        ...styles[v],
-      }}
-    >
-      <i className={"bi " + icons[v]} style={{ fontSize: 11 }}></i>
+    <span className={`badge rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1 ${badgeClasses[v]}`}>
+      <i className={`bi ${icons[v]}`}></i>
       {labels[v]}
     </span>
   );
@@ -93,102 +66,34 @@ function AvailBadge({ available, total }) {
 
 function DetailRow({ icon, label, value, valueStyle }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "9px 0",
-        borderBottom: "0.5px solid var(--bd)",
-      }}
-    >
-      <span
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 7,
-          fontSize: 13,
-          color: "var(--tm)",
-        }}
-      >
-        <i className={"bi " + icon} style={{ fontSize: 14 }}></i>
+    <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
+      <span className="d-flex align-items-center gap-2 text-muted small">
+        <i className={`bi ${icon} fs-6`}></i>
         {label}
       </span>
-      <span
-        style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: "var(--t)",
-          textAlign: "right",
-          ...valueStyle,
-        }}
-      >
+      <span className="fw-semibold text-dark text-end small" style={valueStyle}>
         {value}
       </span>
     </div>
   );
 }
 
-/* ── Loading Skeleton ── */
+/* ── Loading Skeleton using Bootstrap Placeholder Component ── */
 function LoadingSkeleton() {
   return (
-    <div className="bd-page">
-      <div className="bd-inner">
-        <div
-          style={{
-            width: 120,
-            height: 34,
-            borderRadius: 8,
-            background: "var(--skel)",
-          }}
-        />
-        <div className="hero-card">
-          <div className="hero-top">
-            <div className="cover-col" style={{ background: "#1a1a1a" }} />
-            <div className="hero-body" style={{ gap: "1rem" }}>
-              <div style={{ display: "flex", gap: 8 }}>
-                <div
-                  style={{
-                    width: 100,
-                    height: 24,
-                    borderRadius: 999,
-                    background: "var(--skel)",
-                  }}
-                />
-                <div
-                  style={{
-                    width: 80,
-                    height: 24,
-                    borderRadius: 999,
-                    background: "var(--skel)",
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  width: "70%",
-                  height: 36,
-                  borderRadius: 8,
-                  background: "var(--skel)",
-                }}
-              />
-              <div
-                style={{
-                  width: "50%",
-                  height: 18,
-                  borderRadius: 6,
-                  background: "var(--skel)",
-                }}
-              />
-              <div
-                style={{
-                  width: "100%",
-                  height: 60,
-                  borderRadius: 8,
-                  background: "var(--skel)",
-                }}
-              />
+    <div className="container-fluid py-4 placeholder-glow">
+      <div className="mb-3 placeholder col-2 rounded" style={{ height: 34 }} />
+      <div className="card shadow-sm mb-4">
+        <div className="row g-0">
+          <div className="col-md-3 bg-dark d-flex align-items-center justify-content-center p-5" style={{ minHeight: 250 }} />
+          <div className="col-md-9 card-body d-flex flex-column gap-3 p-4">
+            <div className="d-flex gap-2">
+              <span className="placeholder col-2 rounded-pill" style={{ height: 24 }} />
+              <span className="placeholder col-2 rounded-pill" style={{ height: 24 }} />
             </div>
+            <div className="placeholder col-8 rounded" style={{ height: 36 }} />
+            <div className="placeholder col-5 rounded" style={{ height: 18 }} />
+            <div className="placeholder col-12 rounded" style={{ height: 60 }} />
           </div>
         </div>
       </div>
@@ -199,58 +104,18 @@ function LoadingSkeleton() {
 /* ── Error State ── */
 function ErrorState({ message, onBack, onRetry }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        gap: 16,
-        padding: "2rem",
-        background: "var(--bgs)",
-      }}
-    >
-      <div
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: "50%",
-          background: "#FCEBEB",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <i
-          className="bi bi-exclamation-circle"
-          style={{ fontSize: 26, color: "#E24B4A" }}
-        />
+    <div className="d-flex flex-column align-items-center justify-content-center min-vh-100 p-4 bg-light text-center">
+      <div className="bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center mb-3" style={{ width: 56, height: 56 }}>
+        <i className="bi bi-exclamation-circle text-danger fs-3" />
       </div>
-      <div style={{ textAlign: "center" }}>
-        <p
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "var(--t)",
-            marginBottom: 4,
-          }}
-        >
-          Failed to load book
-        </p>
-        <p style={{ fontSize: 13, color: "var(--tm)" }}>{message}</p>
-      </div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button className="btn-back" onClick={onBack}>
-          <i className="bi bi-arrow-left" style={{ fontSize: 14 }}></i> Go back
+      <h5 className="fw-bold mb-1">Failed to load book</h5>
+      <p className="text-muted small mb-4">{message}</p>
+      <div className="d-flex gap-2">
+        <button className="btn btn-outline-secondary btn-sm px-3" onClick={onBack}>
+          <i className="bi bi-arrow-left me-1"></i> Go back
         </button>
-        <button
-          className="btn-back"
-          onClick={onRetry}
-          style={{ color: "var(--t)", fontWeight: 600 }}
-        >
-          <i className="bi bi-arrow-clockwise" style={{ fontSize: 14 }}></i>{" "}
-          Retry
+        <button className="btn btn-dark btn-sm fw-semibold px-3" onClick={onRetry}>
+          <i className="bi bi-arrow-clockwise me-1"></i> Retry
         </button>
       </div>
     </div>
@@ -262,30 +127,32 @@ export default function BookDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+
   const [book, setBook] = useState(null);
-  const [recommended, setRecommended] = useState([]); // 👈 Hook for recommended books data
+  const [recommended, setRecommended] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [borrowState, setBorrowState] = useState("idle");
+  const [isModal, setIsModal] = useState(false)
+  const [form, setForm] = useState({ note: '' })
+  const { borrowRequest } = useBorrowRequest()
 
+  const openModal = () => {
+    setIsModal(true)
+  }
   /* ── Fetch Main Book and Recommendations ── */
   const fetchData = async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch current book detail
       const bookData = await getBooksByIdAPI(id);
-
-      // Handle wrapped dynamic Spring Boot responses (adjust property names if needed, e.g., bookData.data)
       const currentBook = bookData.data ? bookData.data : bookData;
       setBook(currentBook);
 
-      // 2. Fetch other books dynamically to act as suggestions
       const catalogData = await getAllBooksAPI();
       const allBooks = catalogData.data ? catalogData.data : catalogData;
 
-      // Filter out current book so it doesn't recommend itself, take up to 3 books
       const dynamicRecs = allBooks
         .filter((b) => String(b.id) !== String(id))
         .slice(0, 3);
@@ -302,19 +169,19 @@ export default function BookDetail() {
     fetchData();
   }, [id]);
 
-  /* ── Borrow action handler ── */
-  const handleBorrow = () => {
-    if (borrowState !== "idle" || book.available_copies === 0) return;
-    setBorrowState("loading");
-
-    // Replace with your real endpoints once backend borrow feature is live
-    setTimeout(() => {
-      setBorrowState("done");
-      setBook((prev) => ({
-        ...prev,
-        available_copies: Math.max(0, prev.available_copies - 1),
-      }));
-    }, 1200);
+  const handleBorrow = async() => {
+    if (!book) return;
+    console.log(book.id, form)
+    const payload = {
+      book_id: book.id,
+      note: form.note,
+    };
+    await borrowRequest(payload)
+    setBorrowState("done");
+    setIsModal(false);
+    setForm({ note: "" });
+    fetchData();
+    navigate('/member/books')
   };
 
   const handleRecommendedClick = (recId) => {
@@ -334,330 +201,350 @@ export default function BookDetail() {
   if (!book) return null;
 
   return (
-    <>
-      <style>{`
-        :root {
-          --bg: #ffffff; --bgs: #f5f5f5; --t: #000000; --tm: #6b6b6b;
-          --bd: rgba(0,0,0,0.12); --bds: rgba(0,0,0,0.28); --acc: #000000;
-          --acc-t:#ffffff; --hover:#f2f2f2; --skel: #e8e8e8;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bgs); color: var(--t); }
-        @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-        [style*="var(--skel)"] { background: linear-gradient(90deg, #e8e8e8 25%, #f0f0f0 50%, #e8e8e8 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite; }
-        .bd-page { min-height: 100vh; padding: 2rem 1rem; display: flex; justify-content: center; background: var(--bgs); }
-        .bd-inner { 
-          width: 100%; 
-          max-width: none; /* ← full width */ 
-          display: flex; 
-          flex-direction: column; 
-          gap: 1.25rem; 
-        }
-        .btn-back { display: inline-flex; align-items: center; gap: 6px; background: var(--bg); border: 0.5px solid var(--bd); border-radius: 8px; padding: 6px 13px; font-size: 13px; color: var(--tm); cursor: pointer; align-self: flex-start; transition: background .15s; }
-        .btn-back:hover { background: var(--hover); color: var(--t); }
-        .hero-card { background: var(--bg); border: 0.5px solid var(--bd); border-radius: 16px; overflow: hidden; }
-        .hero-top { display: flex; }
-        .cover-col { width: 190px; flex: 0 0 190px; background: #141414; display: flex; align-items: center; justify-content: center; padding: 2.25rem 1.5rem; min-height: 250px; }
-        .cover-block { width: 110px; height: 155px; background: #252525; border-radius: 6px; border: 0.5px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; overflow: hidden; }
-        .cover-initials { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: 3px; }
-        .cover-no-label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 1.5px; }
-        .cover-block img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-body { flex: 1; padding: 1.75rem 2rem; display: flex; flex-direction: column; gap: 1.1rem; justify-content: center; }
-        .hero-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-        .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 0.5px solid var(--bd); color: var(--tm); background: var(--hover); }
-        .book-title { font-size: 1.6rem; font-weight: 700; line-height: 1.2; color: var(--t); }
-        .book-byline { font-size: 13px; color: var(--tm); margin-top: -6px; }
-        .book-byline b { color: var(--t); font-weight: 600; }
-        .book-desc-short { font-size: 13px; color: var(--tm); line-height: 1.7; border-left: 2px solid var(--bds); padding-left: 12px; }
-        .hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .btn-borrow { display: inline-flex; align-items: center; gap: 8px; background: var(--acc); color: var(--acc-t); border: none; border-radius: 10px; padding: 10px 22px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s, background .2s; }
-        .btn-borrow:hover:not(:disabled) { opacity: .85; }
-        .btn-borrow:disabled { opacity: .55; cursor: default; }
-        .btn-borrow.success { background: #27500A; }
-        .copies-pill { display: inline-flex; align-items: center; gap: 7px; background: var(--hover); border: 0.5px solid var(--bd); border-radius: 10px; padding: 9px 14px; font-size: 13px; color: var(--tm); }
-        .copies-num { font-size: 16px; font-weight: 700; color: var(--t); }
-        .spin { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; display: inline-block; animation: spin .7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 0.5px solid var(--bd); }
-        .stat-cell { padding: 1rem 1.5rem; border-right: 0.5px solid var(--bd); display: flex; flex-direction: column; gap: 3px; }
-        .stat-cell:last-child { border-right: none; }
-        .stat-label { font-size: 11px; color: var(--tm); }
-        .stat-value { font-size: 14px; font-weight: 600; color: var(--t); }
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-        @media (max-width: 580px) { .two-col { grid-template-columns: 1fr; } }
-        .info-card { background: var(--bg); border: 0.5px solid var(--bd); border-radius: 16px; padding: 1.25rem 1.5rem; }
-        .info-card-title { font-size: 11px; font-weight: 700; color: var(--tm); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
-        .shelf-pill { display: inline-flex; align-items: center; gap: 6px; background: #EEEDFE; color: #3C3489; border: 0.5px solid #AFA9EC; border-radius: 8px; padding: 4px 12px; font-size: 13px; font-weight: 600; }
-        .desc-card { background: var(--bg); border: 0.5px solid var(--bd); border-radius: 16px; padding: 1.5rem; }
-        .desc-text { font-size: 13.5px; color: var(--tm); line-height: 1.8; margin-top: 8px; }
-        .rec-section { display: flex; flex-direction: column; gap: .85rem; }
-        .rec-header { display: flex; align-items: center; justify-content: space-between; }
-        .rec-title { font-size: 15px; font-weight: 700; color: var(--t); }
-        .rec-view-all { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--tm); cursor: pointer; background: none; border: none; padding: 0; }
-        .rec-view-all:hover { color: var(--t); }
-        .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        @media (max-width: 580px) { .rec-grid { grid-template-columns: 1fr 1fr; } }
-        .rec-card { background: var(--bg); border: 0.5px solid var(--bd); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
-        .rec-card:hover { border-color: var(--bds); }
-        .rec-thumb { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; background: #eef2f5; color: #4b5563; }
-        .rec-info { padding: 10px 12px 12px; }
-        .rec-book-title { font-size: 13px; font-weight: 600; color: var(--t); line-height: 1.3; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rec-author { font-size: 11px; color: var(--tm); }
-        .rec-avail { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--tm); margin-top: 8px; }
-        @media (max-width: 640px) {
-          .hero-top { flex-direction: column; } .cover-col { width: 100%; min-height: 160px; }
-          .stats-bar { grid-template-columns: repeat(2, 1fr); }
-          .stat-cell:nth-child(2) { border-right: none; } .stat-cell:nth-child(3), .stat-cell:nth-child(4) { border-top: 0.5px solid var(--bd); }
-        }
-      `}</style>
+    <div className="container py-4 bg-light min-vh-100 mt-3">
+      {/* Back Button */}
+      <button className="btn btn-white btn-sm border bg-white text-muted px-3 mb-3 d-inline-flex align-items-center gap-1 shadow-sm" onClick={() => navigate(-1)}>
+        <i className="bi bi-arrow-left"></i> Back to catalog
+      </button>
 
-      <div className="bd-page">
-        <div className="bd-inner">
-          <button className="btn-back" onClick={() => navigate(-1)}>
-            <i className="bi bi-arrow-left" style={{ fontSize: 14 }}></i> Back
-            to catalog
-          </button>
+      {/* Hero Book Component */}
+      <div className="card border shadow-sm overflow-hidden mb-4 bg-white">
+        <div className="row g-0">
+          {/* Cover Art Wrapper Column */}
+          <div
+            className="col-md-4 col-lg-3 bg-dark d-flex align-items-center justify-content-center p-0 text-center"
+            style={{ minHeight: "250px" }}
+          >
+            <div className="w-100 h-100 d-flex align-items-center justify-content-center position-relative overflow-hidden">
 
-          {/* ── Hero Info Section ── */}
-          <div className="hero-card">
-            <div className="hero-top">
-              <div className="cover-col">
-                <div className="cover-block">
-                  {book.cover_image ? (
-                    <img src={book.cover_image} alt={book.book_title} />
-                  ) : (
-                    <>
-                      <div className="cover-initials">
-                        {getInitials(book.book_title)}
-                      </div>
-                      <div className="cover-no-label">No Cover</div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="hero-body">
-                <div className="hero-tags">
-                  <span className="chip">
-                    <i className="bi bi-tag" style={{ fontSize: 11 }}></i>{" "}
-                    {book.category_name || "General"}
-                  </span>
-                  <AvailBadge
-                    available={book.available_copies}
-                    total={book.total_copies}
-                  />
-                </div>
-
-                <div>
-                  <h1 className="book-title">{book.book_title}</h1>
-                  <p className="book-byline" style={{ marginTop: 6 }}>
-                    by <b>{book.author_name}</b> &nbsp;·&nbsp;{" "}
-                    {book.publisher_name} &nbsp;·&nbsp; {book.publish_year}
-                  </p>
-                </div>
-
-                <p className="book-desc-short">
-                  {book.description || "No description provided."}
-                </p>
-
-                <div className="hero-actions">
-                  <button
-                    className={
-                      "btn-borrow" + (borrowState === "done" ? " success" : "")
-                    }
-                    onClick={handleBorrow}
-                    disabled={
-                      borrowState !== "idle" || book.available_copies === 0
-                    }
-                  >
-                    {borrowState === "loading" ? (
-                      <span className="spin" />
-                    ) : (
-                      <i
-                        className={
-                          "bi " +
-                          (borrowState === "done" ? "bi-check2" : "bi-book")
-                        }
-                        style={{ fontSize: 15 }}
-                      />
-                    )}
-                    {borrowState === "idle" && book.available_copies === 0
-                      ? "Unavailable"
-                      : borrowState === "loading"
-                        ? "Processing..."
-                        : borrowState === "done"
-                          ? "Borrowed!"
-                          : "Borrow this book"}
-                  </button>
-
-                  <div className="copies-pill">
-                    <i
-                      className="bi bi-journals"
-                      style={{ fontSize: 15, color: "var(--tm)" }}
-                    ></i>
-                    <span className="copies-num">{book.available_copies}</span>
-                    <span>/ {book.total_copies} copies available</span>
+              {book.thumbnail ? (
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${book.thumbnail}`}
+                  alt={book.book_title}
+                  className="w-100 h-100 object-fit-cover"
+                />
+              ) : (
+                <div className="text-white text-center">
+                  <div className="fs-2 fw-bold">
+                    {getInitials(book.book_title)}
+                  </div>
+                  <div style={{ fontSize: "10px", opacity: 0.7 }}>
+                    No Cover
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
 
-            {/* Stats matrix bar */}
-            <div className="stats-bar">
-              <div className="stat-cell">
-                <span className="stat-label">ISBN</span>
-                <span className="stat-value">{book.isbn || "N/A"}</span>
-              </div>
-              <div className="stat-cell">
-                <span className="stat-label">Edition</span>
-                <span className="stat-value">
-                  {book.edition || "1st"} Edition
-                </span>
-              </div>
-              <div className="stat-cell">
-                <span className="stat-label">Pages</span>
-                <span className="stat-value">{book.pages || "--"} pages</span>
-              </div>
-              <div className="stat-cell">
-                <span className="stat-label">Language</span>
-                <span className="stat-value">{book.language || "English"}</span>
-              </div>
             </div>
           </div>
 
-          {/* ── Structured Metadata Grid ── */}
-          <div className="two-col">
-            <div className="info-card">
-              <div className="info-card-title">Book details</div>
-              <DetailRow
-                icon="bi-person-lines-fill"
-                label="Author"
-                value={book.author_name}
-              />
-              <DetailRow
-                icon="bi-building"
-                label="Publisher"
-                value={book.publisher_name}
-              />
-              <DetailRow
-                icon="bi-calendar3"
-                label="Published"
-                value={book.publish_year}
-              />
-              <DetailRow
-                icon="bi-bookmark"
-                label="Category"
-                value={book.category_name || "Uncategorized"}
-              />
-              <DetailRow
-                icon="bi-upc-scan"
-                label="ISBN"
-                value={book.isbn || "N/A"}
-              />
+          {/* Book Identity Body Column */}
+          <div className="col-md-8 col-lg-9 p-4 d-flex flex-column justify-content-center gap-3">
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <span className="badge bg-light text-muted border px-2 py-1.5 d-inline-flex align-items-center gap-1 font-monospace">
+                <i className="bi bi-tag"></i> {book.category_name || "General"}
+              </span>
+              <AvailBadge available={book.available_copies} total={book.total_copies} />
             </div>
 
-            <div className="info-card">
-              <div className="info-card-title">Library info</div>
-              <DetailRow
-                icon="bi-journals"
-                label="Total copies"
-                value={book.total_copies}
-              />
-              <DetailRow
-                icon="bi-check-circle"
-                label="Available"
-                value={`${book.available_copies} copies`}
-                valueStyle={{ color: "#3B6D11" }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "9px 0",
-                }}
-              >
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 7,
-                    fontSize: 13,
-                    color: "var(--tm)",
-                  }}
-                >
-                  <i className="bi bi-geo-alt" style={{ fontSize: 14 }}></i>{" "}
-                  Shelf location
-                </span>
-                <span className="shelf-pill">
-                  <i className="bi bi-geo-alt" style={{ fontSize: 12 }}></i>{" "}
-                  {book.shelf_location || "Main Stack"}
-                </span>
-              </div>
+            <div>
+              <h1 className="h3 fw-bold mb-1 text-dark">{book.book_title}</h1>
+              <p className="text-muted small mb-0">
+                by <b className="text-dark">{book.author_name}</b> &nbsp;·&nbsp; {book.publisher_name} &nbsp;·&nbsp; {book.publish_year}
+              </p>
             </div>
-          </div>
 
-          <div className="desc-card">
-            <div className="info-card-title">Description</div>
-            <p className="desc-text">
-              {book.description || "No extensive summary details available."}
+            <p className="text-muted border-start border-3 ps-3 small my-1 lh-base">
+              {book.description || "No description provided."}
             </p>
-          </div>
 
-          {/* ── Dynamic Recommended Section ── */}
-          {recommended.length > 0 && (
-            <div className="rec-section">
-              <div className="rec-header">
-                <span className="rec-title">You might also like</span>
-                <button
-                  className="rec-view-all"
-                  onClick={() => navigate("/member/books")}
-                >
-                  View all{" "}
-                  <i className="bi bi-arrow-right" style={{ fontSize: 12 }}></i>
-                </button>
-              </div>
+            <div className="d-flex align-items-center gap-2 flex-wrap pt-1">
+              <button
+                className={`btn btn-sm px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 ${borrowState === "done" ? "btn-success" : "btn-dark"
+                  }`}
+                onClick={openModal}
+                disabled={borrowState !== "idle" || book.available_copies === 0}
+              >
+                {borrowState === "loading" ? (
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                ) : (
+                  <i className={`bi ${borrowState === "done" ? "bi-check2" : "bi-book"}`} />
+                )}
+                {borrowState === "idle" && book.available_copies === 0
+                  ? "Unavailable"
+                  : borrowState === "loading"
+                    ? "Processing..."
+                    : borrowState === "done"
+                      ? "Borrowed!"
+                      : "Borrow this book"}
+              </button>
 
-              <div className="rec-grid">
-                {recommended.map((rec) => (
-                  <div
-                    key={rec.id}
-                    className="rec-card"
-                    onClick={() => handleRecommendedClick(rec.id)}
-                  >
-                    <div className="rec-thumb">
-                      {rec.cover_image ? (
-                        <img
-                          src={rec.cover_image}
-                          alt={rec.book_title}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        getInitials(rec.book_title)
-                      )}
-                    </div>
-                    <div className="rec-info">
-                      <div className="rec-book-title">{rec.book_title}</div>
-                      <div className="rec-author">{rec.author_name}</div>
-                      <div className="rec-avail">
-                        <AvailDot
-                          available={rec.available_copies}
-                          total={rec.total_copies}
-                        />
-                        {rec.available_copies} / {rec.total_copies} available
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="bg-light border px-3 py-1.5 rounded d-inline-flex align-items-center gap-2 text-muted small">
+                <i className="bi bi-journals"></i>
+                <span className="fw-bold text-dark fs-6">{book.available_copies}</span>
+                <span>/ {book.total_copies} copies available</span>
               </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* Dynamic Matrix Stat Row */}
+        <div className="row g-0 border-top bg-light">
+          <div className="col-6 col-md-3 p-3 border-end text-center text-md-start">
+            <div className="text-muted small" style={{ fontSize: "11px" }}>ISBN</div>
+            <div className="fw-semibold text-dark small">{book.isbn || "N/A"}</div>
+          </div>
+          <div className="col-6 col-md-3 p-3 border-end-md text-center text-md-start border-end">
+            <div className="text-muted small" style={{ fontSize: "11px" }}>Edition</div>
+            <div className="fw-semibold text-dark small">{book.edition || "1st"} Edition</div>
+          </div>
+          <div className="col-6 col-md-3 p-3 border-end text-center text-md-start border-top border-top-md-0">
+            <div className="text-muted small" style={{ fontSize: "11px" }}>Pages</div>
+            <div className="fw-semibold text-dark small">{book.pages || "--"} pages</div>
+          </div>
+          <div className="col-6 col-md-3 p-3 text-center text-md-start border-top border-top-md-0">
+            <div className="text-muted small" style={{ fontSize: "11px" }}>Language</div>
+            <div className="fw-semibold text-dark small">{book.language || "English"}</div>
+          </div>
         </div>
       </div>
-    </>
+
+      {/* Two-Column Metadata Information Cards */}
+      <div className="row g-4 mb-4">
+        <div className="col-md-6">
+          <div className="card p-4 border shadow-sm h-100 bg-white">
+            <div className="text-muted fw-bold text-uppercase small tracking-wider mb-2" style={{ fontSize: "11px" }}>Book details</div>
+            <DetailRow icon="bi-person-lines-fill" label="Author" value={book.author_name} />
+            <DetailRow icon="bi-building" label="Publisher" value={book.publisher_name} />
+            <DetailRow icon="bi-calendar3" label="Published" value={book.publish_year} />
+            <DetailRow icon="bi-bookmark" label="Category" value={book.category_name || "Uncategorized"} />
+            <DetailRow icon="bi-upc-scan" label="ISBN" value={book.isbn || "N/A"} />
+          </div>
+        </div>
+
+        <div className="col-md-6">
+          <div className="card p-4 border shadow-sm h-100 bg-white">
+            <div className="text-muted fw-bold text-uppercase small tracking-wider mb-2" style={{ fontSize: "11px" }}>Library info</div>
+            <DetailRow icon="bi-journals" label="Total copies" value={book.total_copies} />
+            <DetailRow icon="bi-check-circle" label="Available" value={`${book.available_copies} copies`} valueStyle={{ color: "#3B6D11" }} />
+            <div className="d-flex justify-content-between align-items-center py-2">
+              <span className="d-flex align-items-center gap-2 text-muted small">
+                <i className="bi bi-geo-alt fs-6"></i> Shelf location
+              </span>
+              <span className="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold px-2 py-1.5 d-inline-flex align-items-center gap-1">
+                <i className="bi bi-geo-alt" style={{ fontSize: 12 }}></i> {book.shelf_location || "Main Stack"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Extensive Details Box */}
+      <div className="card p-4 border shadow-sm mb-4 bg-white">
+        <div className="text-muted fw-bold text-uppercase small tracking-wider mb-2" style={{ fontSize: "11px" }}>Description</div>
+        <p className="text-muted small lh-lg mb-0">
+          {book.description || "No extensive summary details available."}
+        </p>
+      </div>
+
+      {/* Dynamic Recommended Section */}
+      {recommended.length > 0 && (
+        <div className="mt-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold text-dark mb-0">You might also like</h5>
+            <button className="btn btn-link text-muted btn-sm text-decoration-none p-0 d-inline-flex align-items-center gap-1" onClick={() => navigate("/member/books")}>
+              View all <i className="bi bi-auto-right"></i>
+            </button>
+          </div>
+
+          <div className="row g-3">
+            {recommended.map((rec) => (
+              <div key={rec.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div
+                  className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative p-0"
+                  style={{
+                    cursor: "pointer",
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  }}
+                  onClick={() => handleRecommendedClick(rec.id)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-6px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 12px 28px rgba(0,0,0,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow =
+                      "0 2px 8px rgba(0,0,0,0.06)";
+                  }}
+                >
+                  {/* IMAGE (same pattern as BookCard) */}
+                  <div
+                    className="bg-light position-relative overflow-hidden"
+                    style={{ height: 280, objectFit: 'cover' }}
+                  >
+                    {rec.thumbnail ? (
+                      <img
+                        src={`${import.meta.env.VITE_API_URL}${rec.thumbnail}`}
+                        alt={rec.book_title}
+                        className="w-100 h-100"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div className="d-flex flex-column align-items-center justify-content-center w-100 h-100 text-secondary">
+                        <span className="fs-3 fw-bold">
+                          {getInitials(rec.book_title)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* YEAR BADGE (same style as main card) */}
+                    <span className="position-absolute top-0 end-0 m-2 badge bg-dark text-white">
+                      {rec.publish_year}
+                    </span>
+                  </div>
+
+                  {/* CONTENT */}
+                  <div className="card-body d-flex flex-column p-3">
+                    <small className="text-uppercase text-muted fw-bold mb-1" style={{ fontSize: 10 }}>
+                      {rec.category_name}
+                    </small>
+
+                    <h6 className="fw-bold text-dark text-truncate mb-1">
+                      {rec.book_title.length > 25
+                        ? rec.book_title.slice(0, 25) + "..."
+                        : rec.book_title}
+                    </h6>
+
+                    <p className="text-muted small mb-2 text-truncate">
+                      {rec.author_name}
+                    </p>
+
+                    <div className="mt-auto pt-2 border-top d-flex align-items-center gap-2">
+                      <AvailDot
+                        available={rec.available_copies}
+                        total={rec.total_copies}
+                      />
+                      <span style={{ fontSize: "11px" }}>
+                        {rec.available_copies} / {rec.total_copies} available
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* modal */}
+      <Modal
+        isOpen={isModal}
+        onClose={() => setIsModal(false)}
+        title='Borrow books'
+        onSave={handleBorrow}
+        saveText="Borrow"
+        btnColorSave="btn-success"
+        children={
+          <div className="container-fluid">
+            <div className="row">
+              {/* Book Cover */}
+              <div className="col-md-4 text-center mb-3">
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${book.thumbnail}`}
+                  alt={book.book_title}
+                  className="img-fluid rounded shadow"
+                  style={{
+                    maxHeight: "260px",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+
+              {/* Book Information */}
+              <div className="col-md-8">
+                <h4 className="fw-bold">{book.book_title}</h4>
+
+                <div className="row mt-3">
+                  <div className="col-6 mb-2">
+                    <strong>Author</strong>
+                    <p className="text-muted mb-0">{book.author_name}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Category</strong>
+                    <p className="text-muted mb-0">{book.category_name}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>ISBN</strong>
+                    <p className="text-muted mb-0">{book.isbn}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Edition</strong>
+                    <p className="text-muted mb-0">{book.edition}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Published</strong>
+                    <p className="text-muted mb-0">{book.publish_year}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Language</strong>
+                    <p className="text-muted mb-0">{book.language}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Pages</strong>
+                    <p className="text-muted mb-0">{book.pages}</p>
+                  </div>
+
+                  <div className="col-6 mb-2">
+                    <strong>Shelf</strong>
+                    <p className="text-muted mb-0">{book.shelf_location}</p>
+                  </div>
+
+                  <div className="col-12 mb-2">
+                    <strong>Status</strong>
+                    <span
+                      className={`badge ms-2 ${book.status === "available"
+                        ? "bg-success"
+                        : "bg-danger"
+                        }`}
+                    >
+                      {book.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <strong>Description</strong>
+                  <p className="text-muted">
+                    {book.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            {/* Borrow Form */}
+            <Input
+              width="100%"
+              label="Borrow Note"
+              name="borrow_note"
+              placeholder="Enter borrow note..."
+              value={form.note}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  note: e.target.value,
+                })
+              }
+            />
+          </div>
+        }
+      />
+    </div>
   );
 }

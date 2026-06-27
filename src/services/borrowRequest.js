@@ -36,3 +36,13 @@ export const rejectBorrowAPI = async (id) =>{
     throw error;
   }
 }
+
+export const borrowsRequestAPI = async (data) =>{
+  try {
+    let res = await api.post('/borrowsRequest', data)
+    return res.data
+  } catch (error) {
+    console.log('rejectBorrow error:', error);
+    throw error;
+  }
+}
