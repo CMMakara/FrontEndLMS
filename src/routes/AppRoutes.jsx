@@ -33,6 +33,7 @@ import PageOTPForgot from '../page/member/PageOTPForgot'
 import ResetPassword from '../page/member/ResetPassword'
 import ProfileMember from '../page/member/Profiel'
 import BookListPage from '../page/member/BookListPage'
+import ProfileLibrarianV2 from '../page/Librarian/ProfileLibrarianV2'
 
 
 function AppRoutes() {
@@ -94,11 +95,10 @@ function AppRoutes() {
           <Route path="/librarian/Member" element={<Member />} />
           <Route path="/librarian/issueBooks" element={<IssueBooks />} />
           <Route path="/librarian/returnBooks" element={<ReturnBooks />} />
-          <Route
-            path="/librarian/borrow-requests"
-            element={<BorrowRequests />}
+          <Route path="/librarian/borrow-requests" element={<BorrowRequests />}
           />
-          <Route path="/librarian/profile" element={<ProfileLibrarian />} />
+          {/* <Route path="/librarian/profile" element={<ProfileLibrarian />} /> */}
+          <Route path="/librarian/profile" element={<ProfileLibrarianV2 />} />
         </Route>
       </Routes>
     </BrowserRouter>

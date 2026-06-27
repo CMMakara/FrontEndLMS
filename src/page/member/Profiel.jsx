@@ -140,8 +140,8 @@ function ProfileContent() {
 
     let res = await updateProfileImage(file)
     if(res) {
-      await getUserProfile();
       setPreviewImage(null);
+      navigation('/member/profile/')
     }
   };
   const handleDeleteImage = async() => {

@@ -72,10 +72,12 @@ const useUser = (initialPage = 1, per_page = 10) => {
         return false
       }
       setUserProfile(res.data)
+      await getUserProfile()
       showToast('Upload Information success', 'success')
       return res.data
     } catch (error) {
-      onsole.log(error)
+      console.log(error)
+      return null;
     }
   }
 
