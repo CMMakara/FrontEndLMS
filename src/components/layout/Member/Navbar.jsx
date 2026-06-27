@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import useUser from "../../../hook/useUsers";
+import useUserAuth from "../../../hook/useAuth";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { userProfile } = useUser()
-
+  const {logout} = useUserAuth()
+  const navigate =  useNavigate()
   const imageUrl = userProfile?.profile_image
     ? `${import.meta.env.VITE_API_URL}${userProfile?.profile_image}`
     : null;
@@ -22,6 +24,10 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = async() =>{
+    await logout()
+    navigate('/login')
+  }
   return (
     <>
       <style>{`
@@ -221,7 +227,7 @@ function Navbar() {
                   </li>
 
                   <li>
-                    <a className="dropdown-item py-2 text-danger fw-bold d-flex align-items-center gap-2" href="#">
+                    <a className="dropdown-item py-2 text-danger fw-bold d-flex align-items-center gap-2" onClick={handleLogout}>
                       <i className="bi bi-box-arrow-right"></i>
                       Logout
                     </a>

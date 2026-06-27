@@ -142,6 +142,7 @@ function Register() {
             <div className="form-floating mb-3">
               <Input
                 width='100%'
+                type='password'
                 icon="bi-lock"
                 label='Password'
                 name="password"
@@ -156,6 +157,7 @@ function Register() {
             <div className="form-floating mb-4">
               <Input
                 width='100%'
+                type='password'
                 icon="bi-shield-lock"
                 label='Confirm Password'
                 name="confirmPassword"
