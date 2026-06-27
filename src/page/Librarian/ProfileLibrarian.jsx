@@ -1,10 +1,67 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import useUser from '../../hook/useUsers'
+import Modal from '../../components/ui/Modal'
+import Input from '../../components/ui/Input'
+import Select from '../../components/ui/Select'
 function ProfileLibrarian() {
-    const { userProfile } = useUser()
+    const { userProfile, updateProfile, getUserProfile, updateProfileImage, deleteProfileImage } = useUser();
+    const [isModal, setIsModal] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
+    const fileInputRef = useRef(null);
+    const [form, setForm] = useState({
+        full_name: "",
+        gender: "",
+        phone: "",
+        email: "",
+        username: "",
+        address: "",
+    });
+
+    const handleSelectImage = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setPreviewImage(URL.createObjectURL(file));
+
+        let res = await updateProfileImage(file)
+        if (res) {
+            setPreviewImage(null);
+        }
+    };
+
+    const openModal = () => {
+        setIsModal(true);
+        setForm({
+            full_name: userProfile?.full_name || "",
+            gender: userProfile?.gender || "",
+            phone: userProfile?.phone || "",
+            email: userProfile?.email || "",
+            username: userProfile?.username || "",
+            address: userProfile?.address || "",
+        });
+    };
+    const handleEditInformation = async () => {
+        let res = await updateProfile(form);
+        if (res) {
+            await getUserProfile();
+            setIsModal(false);
+        }
+    };
+
 
     return (
         <div className="d-flex bg-light container">
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                accept="image/*"
+                style={{ display: "none" }}
+            />
             {/* MAIN CONTENT AREA */}
             <div className="flex-grow-1 d-flex flex-column">
 
@@ -29,7 +86,7 @@ function ProfileLibrarian() {
                                     <img
                                         src={
                                             userProfile?.profile_image
-                                                ? `${import.meta.env.VITE_API_URL}profiles/${userProfile.profile_image}`
+                                                ? `${import.meta.env.VITE_API_URL}profiles/${userProfile?.profile_image}`
                                                 : `${import.meta.env.VITE_API_URL}profiles/default-profile.png`
                                         }
                                         alt="Profile"
@@ -53,7 +110,8 @@ function ProfileLibrarian() {
                                         </p>
                                     </div>
                                 </div>
-                                <button className="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-medium mb-2">
+                                <button className="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-medium mb-2"
+                                    onClick={handleSelectImage}>
                                     <i className="bi bi-pencil me-1"></i> Edit Profile
                                 </button>
                             </div>
@@ -65,7 +123,8 @@ function ProfileLibrarian() {
                         <div className="p-4">
                             <div className="d-flex justify-content-between align-items-center mb-4">
                                 <h5 className="fw-bold text-dark mb-0">Profile details</h5>
-                                <button className="btn btn-link text-secondary text-decoration-none btn-sm fw-medium p-0">
+                                <button className="btn btn-link text-secondary text-decoration-none btn-sm fw-medium p-0"
+                                    onClick={() => openModal()}>
                                     <i className="bi bi-pencil me-1"></i> Edit
                                 </button>
                             </div>
@@ -115,7 +174,7 @@ function ProfileLibrarian() {
                                         <div>
                                             <small className="text-muted d-block">Number</small>
                                             <div className="d-flex align-items-center gap-2">
-                                                <span className="fw-semibold text-dark">{userProfile?.number || "N/A"}</span>
+                                                <span className="fw-semibold text-dark">{userProfile?.phone || "N/A"}</span>
                                                 <span className="badge bg-success-subtle text-success rounded-pill px-2" style={{ fontSize: '0.65rem' }}>✓ Number Verified</span>
                                             </div>
                                         </div>
@@ -145,6 +204,127 @@ function ProfileLibrarian() {
                     </div>
                 </main>
             </div>
+            {/* Modal */}
+            <Modal
+                isOpen={isModal}
+                onClose={() => setIsModal(false)}
+                title='Edit Information'
+                onSave={handleEditInformation}
+                saveText="Save"
+                children={
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-md-6 mb-3">
+                                <Input
+                                    width="100%"
+                                    label="Full Name"
+                                    name="full_name"
+                                    placeholder="Enter full name"
+                                    icon="bi-person-fill"
+                                    value={form.full_name}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            full_name: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <Select
+                                    width="100%"
+                                    label="Gender"
+                                    name="gender"
+                                    icon="bi bi-gender-ambiguous"
+                                    value={form.gender}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            gender: e.target.value,
+                                        })
+                                    }
+                                    options={[
+                                        { value: "", label: "Select Gender" },
+                                        { value: "Male", label: "Male" },
+                                        { value: "Female", label: "Female" },
+                                        { value: "Other", label: "Other" },
+                                    ]}
+                                />
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <Input
+                                    width="100%"
+                                    label="Phone Number"
+                                    name="phone"
+                                    placeholder="Enter phone number"
+                                    icon="bi-telephone-fill"
+                                    value={form.phone}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            phone: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <Input
+                                    width="100%"
+                                    label="Username"
+                                    name="username"
+                                    placeholder="Enter username"
+                                    icon="bi-person-badge-fill"
+                                    value={form.username}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            username: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-md-12 mb-3">
+                                <Input
+                                    width="100%"
+                                    label="Address"
+                                    name="address"
+                                    placeholder="Enter address"
+                                    icon="bi-geo-alt-fill"
+                                    value={form.address}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            address: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-md-12 mb-3">
+                                <Input
+                                    width="100%"
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter email"
+                                    icon="bi-envelope-fill"
+                                    value={form.email}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            email: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                }
+            />
         </div>
     );
 }
