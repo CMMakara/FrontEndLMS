@@ -228,3 +228,11 @@ tr:hover .row-actions {
 }
 .activity-time { font-size: 0.75rem; }
 
+.profile-overlay {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.avatar:hover .profile-overlay {
+  opacity: 1;
+}
