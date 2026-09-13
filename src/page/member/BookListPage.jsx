@@ -875,18 +875,34 @@ export default function BookListPage() {
       <section className="catalog-hero mb-4">
         <div className="container">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div>
-              <span className="hero-stat-pill mb-2">
-                <i className="bi bi-mortarboard-fill text-warning"></i>
-                DISCOVER & BORROW • ACADEMIC ARCHIVES
-              </span>
-              <h1 className="fw-bolder mb-1" style={{ fontSize: "2.3rem", letterSpacing: "-0.5px" }}>
-                Book Catalog & Resources
-              </h1>
-              <p className="text-white-50 mb-0 small" style={{ maxWidth: "560px", fontSize: "14px" }}>
-                Browse our complete collection of textbooks, research volumes, fiction, and journals.
-                Reserve your books in seconds with real-time stock updates.
-              </p>
+            <div className="d-flex align-items-center gap-3.5">
+              <div
+                className="rounded-4 d-flex align-items-center justify-content-center p-3 shadow flex-shrink-0"
+                style={{
+                  width: "64px",
+                  height: "64px",
+                  padding: "14px",
+                  background: "rgba(255, 255, 255, 0.18)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  color: "#ffffff",
+                }}
+              >
+                <i className="bi bi-book-half fs-2 text-warning"></i>
+              </div>
+              <div>
+                <span className="hero-stat-pill mb-2">
+                  <i className="bi bi-mortarboard-fill text-warning"></i>
+                  DISCOVER & BORROW • ACADEMIC ARCHIVES
+                </span>
+                <h1 className="fw-bolder mb-1" style={{ fontSize: "2.3rem", letterSpacing: "-0.5px" }}>
+                  Book Catalog & Resources
+                </h1>
+                <p className="text-white-50 mb-0 small" style={{ maxWidth: "560px", fontSize: "14px" }}>
+                  Browse our complete collection of textbooks, research volumes, fiction, and journals.
+                  Reserve your books in seconds with real-time stock updates.
+                </p>
+              </div>
             </div>
 
             {/* Quick Metrics */}

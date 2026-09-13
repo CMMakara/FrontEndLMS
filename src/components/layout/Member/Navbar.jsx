@@ -155,11 +155,25 @@ function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="navbar-brand d-flex align-items-center fw-bold fs-4 text-white"
+            className="navbar-brand d-flex align-items-center gap-2.5 fw-bold fs-4 text-white text-decoration-none"
             style={{ letterSpacing: "0.5px" }}
           >
-            <i className="bi bi-mortarboard-fill me-2 fs-3"></i>
-            LMS
+            <div
+              className="d-flex align-items-center justify-content-center rounded-3 shadow-sm"
+              style={{
+                width: "42px",
+                height: "42px",
+                padding: "8px",
+                background: "rgba(255, 255, 255, 0.2)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.35)",
+                color: "#ffffff",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <i className="bi bi-mortarboard-fill fs-5"></i>
+            </div>
+            <span>LMS</span>
           </Link>
 
           {/* Mobile Toggle */}

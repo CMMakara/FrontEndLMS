@@ -124,27 +124,35 @@ function Publishers() {
   return (
     <div className="container-fluid py-4">
       {/* Header */}
-      <div
-        className="p-4 rounded-4 mb-4"
-        style={{
-          background:
-            "linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)",
-        }}
-      >
-        <div className="d-flex justify-content-between align-items-center flex-wrap">
-          <div>
-            <h2 className="text-white fw-bold mb-1">
-              Publishers Management
-            </h2>
-
-            <p className="text-white-50 mb-0">
-              Manage all publishers in your system
-            </p>
+      <div className="card border-0 rounded-4 p-4 mb-4 bg-white shadow-sm" style={{ border: "1px solid #e2e8f0" }}>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3.5">
+            <div
+              className="rounded-4 d-flex align-items-center justify-content-center p-3 shadow flex-shrink-0"
+              style={{
+                width: "60px",
+                height: "60px",
+                padding: "14px",
+                background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
+                color: "#ffffff",
+                boxShadow: "0 8px 22px rgba(245, 158, 11, 0.25)",
+              }}
+            >
+              <i className="bi bi-building-fill fs-2"></i>
+            </div>
+            <div>
+              <h2 className="fw-bold mb-0 ms-3" style={{ letterSpacing: "-0.5px" }}>Publishers Management</h2>
+              <p className="text-muted small mb-0 ms-3">Publishing houses, partners, and catalog distributors</p>
+            </div>
           </div>
 
-          <button className="btn btn-success" onClick={openModalCreate}>
-            <i className="bi bi-plus-circle me-2"></i>
-            Create Publisher
+          <button
+            className="btn text-white rounded-pill px-3.5 py-2.5 shadow-sm d-inline-flex align-items-center gap-2 fw-semibold"
+            style={{ background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)", border: "none" }}
+            onClick={openModalCreate}
+          >
+            <i className="bi bi-plus-lg"></i>
+            <span>Create Publisher</span>
           </button>
         </div>
       </div>

@@ -466,15 +466,32 @@ function DashboardLibrarian() {
   return (
     <div className="lib-dashboard">
       {/* PAGE HEADER */}
-      <div className="dash-header">
-        <div>
-          <h1 className="dash-title">Library Dashboard</h1>
-          <p className="dash-subtitle">Overview and statistics of the library system.</p>
-        </div>
-        <div className="dash-actions">
-          <button className="btn btn-outline-action p-3">
-            <i className="bi bi-arrow-clockwise"></i> Refresh Dashboard
-          </button>
+      <div className="card border-0 rounded-4 p-4 mb-4 bg-white shadow-sm" style={{ border: "1px solid #e2e8f0" }}>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3.5">
+            <div
+              className="rounded-4 d-flex align-items-center justify-content-center p-3 shadow flex-shrink-0"
+              style={{
+                width: "60px",
+                height: "60px",
+                padding: "14px",
+                background: "linear-gradient(135deg, #00C18F 0%, #06b6d4 100%)",
+                color: "#ffffff",
+                boxShadow: "0 8px 22px rgba(0, 193, 143, 0.25)",
+              }}
+            >
+              <i className="bi bi-speedometer2 fs-2"></i>
+            </div>
+            <div>
+              <h1 className="dash-title mb-1" style={{ fontSize: "1.75rem", letterSpacing: "-0.5px" }}>Library Dashboard</h1>
+              <p className="dash-subtitle mb-0">Overview and statistics of the library system.</p>
+            </div>
+          </div>
+          <div className="dash-actions">
+            <button className="btn btn-outline-action px-3.5 py-2.5 rounded-pill shadow-xs" onClick={() => window.location.reload()}>
+              <i className="bi bi-arrow-clockwise"></i> Refresh Dashboard
+            </button>
+          </div>
         </div>
       </div>
 
