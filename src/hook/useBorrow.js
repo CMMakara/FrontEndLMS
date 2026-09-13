@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useToast } from '../context/ToastContext.jsx'
-import { createBorrowRecordAPI, getAllBorrowRecordAPI, returnBookAPI } from '../services/borrow'
+import { createBorrowRecordAPI, getAllBorrowRecordAPI, getBorrowedAPI, returnBookAPI, getDueDate as getDueDateAPI } from '../services/borrow'
 
 const useBorrows = () => {
   const [borrow, setBorrow] = useState([])
+  const [dueDates, setDueDates] = useState([])
+  const [dueDatesUser, setDueDatesUser] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [pagination, setPagination] = useState({
     page: 1,
     per_page: 10,
@@ -59,12 +62,73 @@ const useBorrows = () => {
     }
   }
 
+  const getBorrowed = async (id, status) => {
+    try {
+      setLoading(true);
+      let res = await getBorrowedAPI(id, status);
+      const data = res?.data !== undefined ? res.data : res;
+      let list = Array.isArray(data)
+        ? data
+        : (data && typeof data === 'object' && Object.keys(data).length > 0 ? [data] : []);
+
+      if (status && status !== "All" && status !== "all") {
+        const s = status.toLowerCase();
+        list = list.filter((item) => {
+          const itemStatus = (item.status || item.borrow_status || "").toLowerCase();
+          if (s === "borrowed" || s === "active") {
+            return itemStatus === "borrowed" || !item.return_date;
+          }
+          if (s === "overdue") {
+            return itemStatus === "overdue" || item.is_overdue;
+          }
+          if (s === "returned") {
+            return itemStatus === "returned" || item.return_date;
+          }
+          return true;
+        });
+      }
+
+      setBorrow(list);
+      return list;
+    } catch (error) {
+      console.log(error);
+      setBorrow([]);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDueDate = async (id, status) => {
+    try {
+      setLoading(true);
+      const res = await getDueDateAPI(id, status);
+      const list = res?.data || [];
+      setDueDates(list);
+      setDueDatesUser(res?.user || null);
+      return res;
+    } catch (error) {
+      console.log(error);
+      setDueDates([]);
+      setDueDatesUser(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     createBorrowRecord,
     borrow,
+    dueDates,
+    dueDatesUser,
+    loading,
     getAllBorrowRecord,
     pagination,
-    returnBook
+    returnBook,
+    getBorrowed,
+    getDueDate,
+    fetchDueDate: getDueDate,
   }
 
 }

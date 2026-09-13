@@ -2,24 +2,16 @@ import React, { useState } from "react";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 function Navbar() {
   const [notifications] = useState(3);
   const { userProfile } = useUser();
   const { logout } = useUserAuth();
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_API_URL;
-
-  const getProfileImage = (img) => {
-    if (!img || img.includes("default-profile")) {
-      return `${baseUrl}/profiles/default-profile.png`;
-    }
-
-    return `${baseUrl}/${img.replace(/^\//, "")}`;
-  };
 
   const userImage = userProfile?.profile_image;
-  const imgSrc = getProfileImage(userImage);
+  const imgSrc = getAvatarUrl(userImage, userProfile?.full_name || "Librarian");
 
   const handleLogout = async () => {
     await logout();

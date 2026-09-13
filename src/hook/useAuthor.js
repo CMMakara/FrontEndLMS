@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { createAuthorAPI, deteleAuthorAPI, getAllAuthorAPI, updateAuthorAPI } from "../services/authorService"
 import { useToast } from '../context/ToastContext.jsx'
 const useAuthor = (options= {}) =>{
-  const { all = false, per_page = 5 } = options;
+  const { all = false, per_page = 1000 } = options;
   const [author , setAuthor] = useState([])
   const [sortBy , setSortby] = useState('asc')
   const [search, setSearch] = useState('')
