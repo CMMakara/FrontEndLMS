@@ -12,6 +12,8 @@ const Input = ({
   onChange,
   name,
   id,
+  autoComplete,
+  ...rest
 }) => {
   const [show, setShow] = useState(false);
   const isPassword = type === "password";
@@ -21,6 +23,12 @@ const Input = ({
       ? "text"
       : "password"
     : type;
+
+  const resolvedAutoComplete = autoComplete !== undefined
+    ? autoComplete
+    : isPassword
+    ? "current-password"
+    : undefined;
 
   return (
     <StyledWrapper style={{ maxWidth: width }}>
@@ -37,6 +45,8 @@ const Input = ({
           value={value}
           onChange={onChange}
           name={name}
+          autoComplete={resolvedAutoComplete}
+          {...rest}
         />
 
         {isPassword && (

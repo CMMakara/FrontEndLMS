@@ -5,6 +5,7 @@ import useMember from '../../hook/useMember'
 import useBorrow from '../../hook/useBorrow'
 import useBorrowRequest from '../../hook/useBorrowRequest'
 import Table from '../../components/ui/Table'
+import { getAvatarUrl, handleAvatarError } from '../../utils/avatar'
 import {
   Chart,
   CategoryScale,
@@ -402,9 +403,9 @@ function DashboardLibrarian() {
       .filter(b => b.status === "borrowed")
       .map(b => b.member_code)
   ).size;
-  const pendingRequests = borrowsRequest.filter(
-    (r) => r.status?.toLowerCase() === "pending"
-  ).length;
+  const pendingRequests = Array.isArray(borrowsRequest)
+    ? borrowsRequest.filter((r) => r.status?.toLowerCase() === "pending").length
+    : 0;
   const quickSummary = [
     { label: "Books Available", value: booksAvailable, icon: "bi-bookshelf" },
     { label: "Books Borrowed", value: booksBorrowed, icon: "bi-journal-bookmark" },
@@ -639,11 +640,10 @@ function DashboardLibrarian() {
                     <div className="member-card">
 
                       <img
-                        src={`${import.meta.env.VITE_API_URL}${(m.profile_image || '/uploads/profiles/default-profile.png')
-                            .replace('/uploads/', '')
-                          }`}
+                        src={getAvatarUrl(m.profile_image, m.full_name)}
                         alt={m.full_name}
                         className="member-avatar"
+                        onError={(e) => handleAvatarError(e, m.full_name)}
                       />
 
                       <div className="member-name">{m.full_name}</div>

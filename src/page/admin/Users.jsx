@@ -7,6 +7,7 @@ import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import Modal from '../../components/ui/Modal';
 import { validateCreateUser } from "../../validations/CreateUserSchema";
+import { getAvatarUrl, handleAvatarError } from '../../utils/avatar';
 function User() {
   const {
     users,
@@ -83,25 +84,7 @@ function User() {
 
   ];
   const getProfileImage = (user) => {
-    const baseUrl = import.meta.env.VITE_API_URL;
-    // fallback image
-    const defaultImg = `${baseUrl}/profiles/default-profile.png`;
-
-    // no image case
-    if (
-      !user?.profile_image ||
-      user.profile_image === '/uploads/default-profile.png' ||
-      user.profile_image === '/uploads/profiles/default-profile.png'
-    ) {
-      return defaultImg;
-    }
-
-    // clean path (avoid double slash)
-    const path = user.profile_image.startsWith('/')
-      ? user.profile_image.slice(1)
-      : user.profile_image;
-
-    return `${baseUrl}/${path}`;
+    return getAvatarUrl(user?.profile_image, user?.full_name || "User");
   };
 
   const handleChange = (e) => {
@@ -262,6 +245,7 @@ function User() {
                     objectFit: 'cover',
                     border: '3px solid #f1f1f1',
                   }}
+                  onError={(e) => handleAvatarError(e, selectedUser?.full_name || "User")}
                 />
 
                 <h5 className="mt-3 mb-0 fw-bold">{selectedUser?.full_name}</h5>
@@ -364,6 +348,7 @@ function User() {
                 placeholder="Enter password"
                 type="password"
                 name="password"
+                autoComplete="new-password"
                 value={form.password}
                 error={errors.password}
                 onChange={handleChange}

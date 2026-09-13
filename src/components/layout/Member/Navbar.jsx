@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUser, { broadcastUserProfile } from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
-import { getAvatarUrl } from "../../../utils/avatar";
+import { getAvatarUrl, handleAvatarError } from "../../../utils/avatar";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -12,6 +12,7 @@ function Navbar() {
 
   const displayName = userProfile?.full_name || userProfile?.username || "Member";
   const avatarSrc = getAvatarUrl(userProfile?.profile_image, displayName);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -244,10 +245,7 @@ function Navbar() {
                       alt={displayName}
                       className="rounded-circle border border-2 border-white object-fit-cover shadow-sm"
                       style={{ width: "38px", height: "38px" }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
-                      }}
+                      onError={(e) => handleAvatarError(e, displayName)}
                     />
                     <span
                       className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
@@ -278,10 +276,7 @@ function Navbar() {
                           alt={displayName}
                           className="rounded-circle border border-2 border-white shadow-sm object-fit-cover flex-shrink-0"
                           style={{ width: "44px", height: "44px" }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
-                          }}
+                          onError={(e) => handleAvatarError(e, displayName)}
                         />
                         <div className="overflow-hidden flex-grow-1">
                           <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ fontSize: "14px" }}>
@@ -307,21 +302,21 @@ function Navbar() {
 
                   <li>
                     <Link to="/member/profile" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-person-circle text-primary fs-6"></i>
+                      <i className="bi bi-person-circle text-primary fs-6 me-3"></i>
                       <span>My Profile</span>
                     </Link>
                   </li>
 
                   <li>
                     <Link to="/member/profile/borrowing-history" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-clock-history text-info fs-6"></i>
+                      <i className="bi bi-clock-history text-info fs-6 me-3"></i>
                       <span>Borrowing History</span>
                     </Link>
                   </li>
 
                   <li>
                     <Link to="/member/profile/due-date" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-calendar-event text-warning fs-6"></i>
+                      <i className="bi bi-calendar-event text-warning fs-6 me-3"></i>
                       <span>Due Date</span>
                     </Link>
                   </li>
@@ -336,7 +331,7 @@ function Navbar() {
                       className="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2.5 rounded-3 w-100 text-start bg-transparent border-0"
                       onClick={handleLogout}
                     >
-                      <i className="bi bi-box-arrow-right fs-6"></i>
+                      <i className="bi bi-box-arrow-right fs-6 me-3"></i>
                       <span>Logout</span>
                     </button>
                   </li>

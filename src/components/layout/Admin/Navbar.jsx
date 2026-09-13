@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
-import { getAvatarUrl } from "../../../utils/avatar";
+import { getAvatarUrl, handleAvatarError } from "../../../utils/avatar";
 
 function Navbar() {
   const [notifications] = useState(3);
@@ -119,6 +119,7 @@ function Navbar() {
                   objectFit: "cover",
                   border: "2px solid rgba(255,255,255,0.1)",
                 }}
+                onError={(e) => handleAvatarError(e, userProfile?.full_name || "Admin")}
               />
 
               {/* USER INFO */}

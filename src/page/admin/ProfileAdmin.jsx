@@ -1,13 +1,12 @@
 import React from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import useUser from "../../hook/useUsers";
+import { getAvatarUrl, handleAvatarError } from "../../utils/avatar";
 
 function ProfileAdmin() {
   const { userProfile } = useUser();
 
-  const profileImage = userProfile?.profile_image
-    ? `${import.meta.env.VITE_API_URL}/${userProfile.profile_image.replace(/^\//, "")}`
-    : "https://ui-avatars.com/api/?name=Admin&background=0F172A&color=fff";
+  const profileImage = getAvatarUrl(userProfile?.profile_image, userProfile?.full_name || "Admin");
 
   return (
     <div className="container-fluid py-4" style={{ maxWidth: "1100px" }}>
@@ -118,7 +117,12 @@ function ProfileAdmin() {
             <div className="profile-banner"></div>
             <div className="px-4 pb-4">
               <div className="profile-avatar-wrap">
-                <img src={profileImage} alt="profile" className="profile-avatar" />
+                <img
+                  src={profileImage}
+                  alt="profile"
+                  className="profile-avatar"
+                  onError={(e) => handleAvatarError(e, userProfile?.full_name || "Admin")}
+                />
               </div>
 
               <h5 className="fw-bold mt-3 mb-0" style={{ color: "#0f172a" }}>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
-import { getAvatarUrl } from "../../../utils/avatar";
+import { getAvatarUrl, handleAvatarError } from "../../../utils/avatar";
 
 function Navbar() {
   const [notifications] = useState(3);
@@ -83,6 +83,7 @@ function Navbar() {
                 height="40"
                 className="rounded-circle shadow-sm"
                 style={{ objectFit: "cover" }}
+                onError={(e) => handleAvatarError(e, userProfile?.full_name || "Librarian")}
               />
             </button>
 

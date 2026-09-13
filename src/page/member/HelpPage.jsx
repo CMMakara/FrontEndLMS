@@ -388,8 +388,8 @@ export default function HelpPage() {
         <div className="container">
           <div className="text-center mb-4">
             <div className="section-eyebrow">Get Help Fast</div>
-            <h2 className="section-title">Quick Support Actions</h2>
-            <p className="section-subtitle">Choose the fastest way to get help from our team.</p>
+            <h2 className="display-5">Quick Support Actions</h2>
+            <p >Choose the fastest way to get help from our team.</p>
           </div>
           <div className="row g-3 justify-content-center">
             {SUPPORT_ACTIONS.map((s) => (
@@ -455,8 +455,8 @@ export default function HelpPage() {
         <div className="container">
           <div className="text-center mb-5">
             <div className="section-eyebrow">FAQ</div>
-            <h2 className="section-title">Questions and Answers</h2>
-            <p className="section-subtitle">Frequently asked questions, grouped by topic.</p>
+            <h2 className="display-5">Questions and Answers</h2>
+            <p>Frequently asked questions, grouped by topic.</p>
           </div>
           <div className="row g-4">
             {FAQ_DATA.map((cat) => (
@@ -501,11 +501,11 @@ export default function HelpPage() {
             <div className="col-lg-7">
               <div className="text-center mb-4">
                 <div className="section-eyebrow">Direct Support</div>
-                <h2 className="section-title">Contact Support Team</h2>
-                <p className="section-subtitle">We typically respond within one business day.</p>
+                <h2 className="text-center display-5">Contact Support Team</h2>
+                <p className="text-center">We typically respond within one business day.</p>
               </div>
               <div className="contact-form-card">
-                <div className="row g-3">
+                <div className="row gy-3">
                   <div className="col-md-6">
                     <label className="form-label">Full Name *</label>
                     <input
@@ -635,7 +635,7 @@ export default function HelpPage() {
               </div>
             </div>
             <div className="col-lg-7">
-              <div className="row g-3">
+              <div className="row gy-3">
                 {[
                   { icon: "bi-display", title: "Digital Library Management", desc: "Manage your entire catalog, members, and operations through one unified digital dashboard." },
                   { icon: "bi-lightning-charge", title: "Fast Borrow & Return", desc: "Issue and process borrow/return transactions in seconds with QR code scanning." },
@@ -699,7 +699,7 @@ export default function HelpPage() {
             <div className="col-lg-7">
               <div className="section-eyebrow">Live Stats</div>
               <h2 className="section-title mb-4">System Status Panel</h2>
-              <div className="row g-3">
+              <div className="row gy-3">
                 {[
                   { icon: "bi-server", label: "System Status", value: "Online", indicator: true },
                   { icon: "bi-database-check", label: "Database Status", value: "Stable", indicator: true },
@@ -746,8 +746,8 @@ export default function HelpPage() {
         <div className="container">
           <div className="text-center mb-5">
             <div className="section-eyebrow">How It Works</div>
-            <h2 className="section-title">Borrowing Guide</h2>
-            <p className="section-subtitle">Five simple steps from search to return.</p>
+            <h2 className="display-5">Borrowing Guide</h2>
+            <p>Five simple steps from search to return.</p>
           </div>
           <div className="steps-timeline">
             {STEPS.map((step, i) => (
@@ -768,10 +768,10 @@ export default function HelpPage() {
         <div className="container">
           <div className="text-center mb-5">
             <div className="section-eyebrow">Policies</div>
-            <h2 className="section-title">Return & Fine Policy</h2>
-            <p className="section-subtitle">Know your responsibilities as a borrower.</p>
+            <h2 className="display-5">Return & Fine Policy</h2>
+            <p>Know your responsibilities as a borrower.</p>
           </div>
-          <div className="row g-3">
+          <div className="row gy-3">
             {POLICIES.map((p) => (
               <div key={p.title} className="col-sm-6 col-lg-3">
                 <div className="policy-card">

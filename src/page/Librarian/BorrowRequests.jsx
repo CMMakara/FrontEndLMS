@@ -4,6 +4,7 @@ import useBorrowRequest from '../../hook/useBorrowRequest';
 import Table from '../../components/ui/Table';
 import Input from '../../components/ui/Input';
 import Pagination from '../../components/ui/Pagination';
+import { getAvatarUrl, handleAvatarError } from '../../utils/avatar';
 
 const BorrowRequests = () => {
   const { borrowsRequest, approveBorrow, getAllBorrowRequest , rejectBorrow } = useBorrowRequest({ perPage: 10000 });
@@ -132,22 +133,18 @@ const BorrowRequests = () => {
       header: 'Member Info',
       accessor: '',
       render: (row) => {
-        const imagePath = row.profile_image
-          ? row.profile_image.replace('/uploads/', '')
-          : 'profiles/default-profile.png';
+        const imgSrc = getAvatarUrl(row.profile_image, row.member_name);
 
         return (
           <div className="d-flex align-items-center gap-2">
             <img
-              src={`${import.meta.env.VITE_API_URL}${imagePath}`}
+              src={imgSrc}
               alt={row.member_name}
               width={40}
               height={40}
               className="rounded-circle"
               style={{ objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
-              }}
+              onError={(e) => handleAvatarError(e, row.member_name)}
             />
 
             <div>
@@ -416,10 +413,10 @@ const BorrowRequests = () => {
                   <h6 className="section-title">Member Information</h6>
                   <div className="member-card">
                     <img
-                      src={`${import.meta.env.VITE_API_URL}${selectedRequest?.profile_image?.replace('/uploads/', '') || 'profiles/default-profile.png'}`}
+                      src={getAvatarUrl(selectedRequest?.profile_image, selectedRequest?.member_name)}
                       alt={selectedRequest?.member_name}
                       className="member-avatar"
-                      onError={(e) => { e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`; }}
+                      onError={(e) => handleAvatarError(e, selectedRequest?.member_name)}
                     />
                     <div className="member-details">
                       <div className="fw-600">{selectedRequest?.member_name}</div>

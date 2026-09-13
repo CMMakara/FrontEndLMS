@@ -9,6 +9,7 @@ import useBorrow from '../../hook/useBorrow'
 import Modal from '../../components/ui/Modal'
 import useUser from '../../hook/useUsers';
 import { validateCreateUser } from "../../validations/CreateUserSchema";
+import { getAvatarUrl, handleAvatarError } from '../../utils/avatar';
 const Members = () => {
   // State Management
   const [selectedMember, setSelectedMember] = useState(null);
@@ -114,22 +115,18 @@ const Members = () => {
       header: 'Member Info',
       accessor: '',
       render: (row) => {
-        const imagePath = row.profile_image
-          ? row.profile_image.replace('/uploads/', '')
-          : 'profiles/default-profile.png';
+        const imgSrc = getAvatarUrl(row.profile_image, row.full_name);
 
         return (
           <div className="d-flex align-items-center gap-2">
             <img
-              src={`${import.meta.env.VITE_API_URL}${imagePath}`}
+              src={imgSrc}
               alt={row.full_name}
               width={40}
               height={40}
               className="rounded-circle"
               style={{ objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
-              }}
+              onError={(e) => handleAvatarError(e, row.full_name)}
             />
 
             <div>
@@ -267,16 +264,8 @@ const Members = () => {
     { title: 'Overdue Books', value: allMembers.reduce((sum, m) => sum + Number(m.overdue_books || 0), 0), icon: 'bi-exclamation-circle-fill', color: '#EF4444' }
   ];
 
-  const getProfileImage = (img) => {
-    if (!img || typeof img !== "string") {
-      return `${baseURL}/profiles/default-profile.png`;
-    }
-
-    const cleanImg = img.trim();
-    if (cleanImg.startsWith("http")) return cleanImg;
-    if (cleanImg.startsWith("/uploads/")) return `${baseURL}${cleanImg.replace("/uploads", "")}`;
-    if (cleanImg.startsWith("profiles/")) return `${baseURL}/${cleanImg}`;
-    return `${baseURL}/profiles/${cleanImg.replace(/^\/+/, "")}`;
+  const getProfileImage = (img, name = "Member") => {
+    return getAvatarUrl(img, name);
   };
 
   const handleReset = () => {
@@ -455,9 +444,10 @@ const Members = () => {
             <div className="member-details-card">
               <div className="member-header">
                 <img
-                  src={getProfileImage(selectedMember?.profile_image)}
+                  src={getProfileImage(selectedMember?.profile_image, selectedMember?.full_name)}
                   className="member-avatar"
                   alt={selectedMember?.full_name || "profile"}
+                  onError={(e) => handleAvatarError(e, selectedMember?.full_name || "Member")}
                 />
                 <h4 className="member-name-large">{selectedMember.full_name}</h4>
                 <p className="member-id-large ">{selectedMember.user_id}</p>
@@ -556,6 +546,7 @@ const Members = () => {
                 placeholder="Enter password"
                 type="password"
                 name="password"
+                autoComplete="new-password"
                 value={form.password}
                 error={errors.password}
                 onChange={handleChange}
