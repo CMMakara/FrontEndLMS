@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Link ,useNavigate} from "react-router-dom";
-import useUser from "../../../hook/useUsers";
+import { Link, useNavigate } from "react-router-dom";
+import useUser, { broadcastUserProfile } from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const { userProfile } = useUser()
-  const {logout} = useUserAuth()
-  const navigate =  useNavigate()
-  const imageUrl = userProfile?.profile_image
-    ? `${import.meta.env.VITE_API_URL}${userProfile?.profile_image}`
-    : null;
+  const { userProfile } = useUser();
+  const { logout } = useUserAuth();
+  const navigate = useNavigate();
+
+  const displayName = userProfile?.full_name || userProfile?.username || "Member";
+  const avatarSrc = getAvatarUrl(userProfile?.profile_image, displayName);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -24,10 +26,11 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = async() =>{
-    await logout()
-    navigate('/login')
-  }
+  const handleLogout = async () => {
+    await logout();
+    broadcastUserProfile(null);
+    navigate('/login');
+  };
   return (
     <>
       <style>{`
@@ -94,6 +97,33 @@ function Navbar() {
           box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
+        .profile-pill-btn {
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          backdrop-filter: blur(12px);
+          transition: all 0.3s ease;
+          padding: 4px 12px 4px 5px;
+          border-radius: 50px;
+        }
+        .profile-pill-btn:hover, .profile-pill-btn:focus {
+          background: rgba(255, 255, 255, 0.25);
+          border-color: rgba(255, 255, 255, 0.5);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .profile-dropdown-menu {
+          min-width: 275px;
+          border-radius: 18px;
+          padding: 10px;
+          box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2), 0 4px 12px rgba(15, 23, 42, 0.08);
+          animation: drop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .profile-user-card {
+          background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+          border-radius: 14px;
+          padding: 12px;
+          border: 1px solid #e2e8f0;
+        }
         .profile-img {
           transition: 0.3s;
         }
@@ -200,37 +230,115 @@ function Navbar() {
                 </ul>
               </div>
 
-              {/* Profile */}
+              {/* Profile Dropdown */}
               <div className="dropdown">
-                <button className="btn p-0 border-0 bg-transparent shadow-none" data-bs-toggle="dropdown">
-                  <img
-                    src={imageUrl}
-                    alt="Profile"
-                    className="rounded-circle border border-2 border-white object-fit-cover"
-                    style={{ width: "45px", height: "45px" }}
-                    onError={(e) => {
-                      e.target.src = "https://i.pravatar.cc/40";
-                    }}
-                  />
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-3">
-                  <li>
+                <button
+                  className="btn profile-pill-btn d-flex align-items-center gap-2 shadow-none"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  type="button"
+                >
+                  <div className="position-relative d-inline-block">
+                    <img
+                      src={avatarSrc}
+                      alt={displayName}
+                      className="rounded-circle border border-2 border-white object-fit-cover shadow-sm"
+                      style={{ width: "38px", height: "38px" }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
+                      }}
+                    />
+                    <span
+                      className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
+                      style={{ width: "10px", height: "10px" }}
+                      title="Active"
+                    ></span>
+                  </div>
 
-                    <Link to="/member/profile" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2">
-                      <i className="bi bi-person-circle"></i>
-                      Profile
+                  <div className="d-none d-sm-flex flex-column text-start me-1" style={{ maxWidth: "125px" }}>
+                    <span className="fw-bold text-white text-truncate" style={{ fontSize: "13px", lineHeight: "1.2" }}>
+                      {displayName}
+                    </span>
+                    <span className="text-white-50 text-truncate" style={{ fontSize: "11px", letterSpacing: "0.2px" }}>
+                      {userProfile?.role_name || "Member"}
+                    </span>
+                  </div>
+
+                  <i className="bi bi-chevron-down text-white small opacity-75 ms-1"></i>
+                </button>
+
+                <ul className="dropdown-menu dropdown-menu-end profile-dropdown-menu border-0 shadow-lg mt-3">
+                  {/* User Profile Header */}
+                  <li>
+                    <div className="profile-user-card mb-2">
+                      <div className="d-flex align-items-center gap-2">
+                        <img
+                          src={avatarSrc}
+                          alt={displayName}
+                          className="rounded-circle border border-2 border-white shadow-sm object-fit-cover flex-shrink-0"
+                          style={{ width: "44px", height: "44px" }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
+                          }}
+                        />
+                        <div className="overflow-hidden flex-grow-1">
+                          <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ fontSize: "14px" }}>
+                            {displayName}
+                          </h6>
+                          <div className="text-muted text-truncate" style={{ fontSize: "12px" }}>
+                            {userProfile?.email || "No email available"}
+                          </div>
+                          <div className="d-flex align-items-center gap-1 mt-1">
+                            <span className="badge bg-primary-subtle text-primary border border-primary-subtle" style={{ fontSize: "10px", padding: "2px 6px" }}>
+                              {userProfile?.role_name || "Member"}
+                            </span>
+                            {userProfile?.member_code && (
+                              <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: "10px", padding: "2px 6px" }}>
+                                {userProfile.member_code}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <Link to="/member/profile" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
+                      <i className="bi bi-person-circle text-primary fs-6"></i>
+                      <span>My Profile</span>
                     </Link>
                   </li>
 
                   <li>
-                    <hr className="dropdown-divider" />
+                    <Link to="/member/profile/borrowing-history" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
+                      <i className="bi bi-clock-history text-info fs-6"></i>
+                      <span>Borrowing History</span>
+                    </Link>
                   </li>
 
                   <li>
-                    <a className="dropdown-item py-2 text-danger fw-bold d-flex align-items-center gap-2" onClick={handleLogout}>
-                      <i className="bi bi-box-arrow-right"></i>
-                      Logout
-                    </a>
+                    <Link to="/member/profile/due-date" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
+                      <i className="bi bi-calendar-event text-warning fs-6"></i>
+                      <span>Due Date</span>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <hr className="dropdown-divider my-2" />
+                  </li>
+
+                  <li>
+                    <button
+                      type="button"
+                      className="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2.5 rounded-3 w-100 text-start bg-transparent border-0"
+                      onClick={handleLogout}
+                    >
+                      <i className="bi bi-box-arrow-right fs-6"></i>
+                      <span>Logout</span>
+                    </button>
                   </li>
                 </ul>
               </div>

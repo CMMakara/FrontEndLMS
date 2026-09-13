@@ -4,6 +4,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 function Navbar() {
   const [notifications] = useState(3);
@@ -11,9 +12,7 @@ function Navbar() {
   const {logout} = useUserAuth()
   const navigate = useNavigate()
 
-  const profileImage = userProfile?.profile_image
-    ? `${import.meta.env.VITE_API_URL}/${userProfile.profile_image.replace(/^\//, "")}`
-    : `${import.meta.env.VITE_API_URL}/profiles/default-profile.png`;
+  const profileImage = getAvatarUrl(userProfile?.profile_image, userProfile?.full_name || "Admin");
 
   const handleLogout = async () =>{
     await logout()

@@ -4,6 +4,7 @@ import { setAuth } from "../utils/auth";
 import { validateLogin } from "../validations/LoginSchema";
 import { useState } from "react";
 import { useToast } from '../context/ToastContext.jsx'
+import { broadcastUserProfile } from "./useUsers";
 
 const useUserAuth = () => {
   const navigate = useNavigate();
@@ -70,12 +71,14 @@ const useUserAuth = () => {
       await logoutUserAPI();
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      broadcastUserProfile(null);
 
       showToast("Logout successfully", "success");
     } catch (error) {
       console.log("Logout API failed:", error);
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      broadcastUserProfile(null);
       showToast("Logout failed, but session cleared", "warning");
     }
   };

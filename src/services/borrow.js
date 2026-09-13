@@ -35,3 +35,33 @@ export const returnBookAPI = async(id , data) =>{
     throw error;
   }
 }
+
+
+export const getBorrowedAPI = async (id, status) => {
+  try {
+    const params = {};
+    if (status && status !== 'All' && status !== 'all') {
+      params.status = status;
+    }
+    const url = id ? `/borrows/${id}` : '/borrows';
+    let res = await api.get(url, { params });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getDueDate = async (id, status) => {
+  try {
+    const params = {};
+    if (status && status !== 'All' && status !== 'all') {
+      params.status = status;
+    }
+    let res = await api.get(`/borrows/due-date/${id}`, { params });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
