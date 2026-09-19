@@ -509,3 +509,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-animation {
+  display: inline-block;
+  animation: spin 0.75s linear infinite;
+}

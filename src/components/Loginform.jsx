@@ -78,10 +78,11 @@ function Loginform({
 
               <form onSubmit={handleSubmit}>
                 {/* Email */}
-
                 <div className="mb-3">
                   <Input
                     label="Email"
+                    name="username"
+                    autoComplete="username"
                     width="100%"
                     placeholder="Enter your email or Username"
                     icon="bi bi-person"
@@ -89,9 +90,8 @@ function Loginform({
                     error={errors.emailOrUsername}
                     onChange={(e) => {
                       setEmail(e.target.value);
-                      clearError("emailOrUsername")
-                    }
-                    }
+                      clearError("emailOrUsername");
+                    }}
                   />
                 </div>
 
@@ -99,6 +99,8 @@ function Loginform({
                 <div className="mb-3">
                   <Input
                     label="Password"
+                    name="password"
+                    autoComplete="current-password"
                     width="100%"
                     placeholder="Enter your password"
                     icon="bi bi-lock-fill"
@@ -106,8 +108,8 @@ function Loginform({
                     value={password}
                     error={errors.password}
                     onChange={(e) => {
-                      setPassword(e.target.value)
-                      clearError("password")
+                      setPassword(e.target.value);
+                      clearError("password");
                     }}
                   />
                 </div>

@@ -44,6 +44,7 @@ function AppRoutes() {
         <Route path='/verify-otp' element={<PageOTP/>} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/resetPassword' element={<ResetPassword/>} />
+        <Route path='/reset-password' element={<ResetPassword/>} />
         <Route path='/otp-forgot' element={<PageOTPForgot/>} />
         <Route path='/admin/login' element={<LoginAdminpage/>} />
         <Route path='/librarian/login' element={<LoginLibrarianpage/>} />

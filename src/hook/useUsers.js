@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import { createUserAPI, deleteProfileAPI, getAllUserAPI, getMeAPI, updateProfileAPI, updateProfileImageAPI } from "../services/userService"
 import { useToast } from '../context/ToastContext.jsx'
+import { getAvatarUrl } from "../utils/avatar"
 
 // Shared profile state across all useUser instances (Navbar, Profile, Sidebar, etc.)
 let sharedUserProfile = null;
@@ -50,7 +51,11 @@ const useUser = (initialPage = 1, per_page = 10) => {
         order,
       })
       const data = res.data || []
-      setUsers(data)
+      const normalizedUsers = data.map((u) => ({
+        ...u,
+        profile_image: getAvatarUrl(u.profile_image, u.full_name || u.username || "User"),
+      }));
+      setUsers(normalizedUsers)
       setPagination(res?.pagination || {})
     } catch (error) {
       console.log(error)
@@ -83,9 +88,20 @@ const useUser = (initialPage = 1, per_page = 10) => {
       }
       profileFetchPromise = (async () => {
         const res = await getMeAPI();
-        const profile = (res?.data && typeof res.data === "object" && !Array.isArray(res.data))
+        let profile = (res?.data && typeof res.data === "object" && !Array.isArray(res.data))
           ? res.data
           : (res?.data?.data || res || null);
+
+        if (profile) {
+          profile = {
+            ...profile,
+            profile_image: getAvatarUrl(
+              profile.profile_image,
+              profile.full_name || profile.username || "Member"
+            ),
+          };
+        }
+
         broadcastUserProfile(profile);
         return profile;
       })();

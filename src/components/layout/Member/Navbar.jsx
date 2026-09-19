@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUser, { broadcastUserProfile } from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
-import { getAvatarUrl } from "../../../utils/avatar";
+import { getAvatarUrl, handleAvatarError } from "../../../utils/avatar";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -12,6 +12,7 @@ function Navbar() {
 
   const displayName = userProfile?.full_name || userProfile?.username || "Member";
   const avatarSrc = getAvatarUrl(userProfile?.profile_image, displayName);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -154,11 +155,25 @@ function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="navbar-brand d-flex align-items-center fw-bold fs-4 text-white"
+            className="navbar-brand d-flex align-items-center gap-2.5 fw-bold fs-4 text-white text-decoration-none"
             style={{ letterSpacing: "0.5px" }}
           >
-            <i className="bi bi-mortarboard-fill me-2 fs-3"></i>
-            LMS
+            <div
+              className="d-flex align-items-center justify-content-center rounded-3 shadow-sm"
+              style={{
+                width: "42px",
+                height: "42px",
+                padding: "8px",
+                background: "rgba(255, 255, 255, 0.2)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 255, 255, 0.35)",
+                color: "#ffffff",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <i className="bi bi-mortarboard-fill fs-5"></i>
+            </div>
+            <span>LMS</span>
           </Link>
 
           {/* Mobile Toggle */}
@@ -244,10 +259,7 @@ function Navbar() {
                       alt={displayName}
                       className="rounded-circle border border-2 border-white object-fit-cover shadow-sm"
                       style={{ width: "38px", height: "38px" }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
-                      }}
+                      onError={(e) => handleAvatarError(e, displayName)}
                     />
                     <span
                       className="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle"
@@ -278,10 +290,7 @@ function Navbar() {
                           alt={displayName}
                           className="rounded-circle border border-2 border-white shadow-sm object-fit-cover flex-shrink-0"
                           style={{ width: "44px", height: "44px" }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff&bold=true`;
-                          }}
+                          onError={(e) => handleAvatarError(e, displayName)}
                         />
                         <div className="overflow-hidden flex-grow-1">
                           <h6 className="fw-bold text-dark mb-0 text-truncate" style={{ fontSize: "14px" }}>
@@ -307,21 +316,21 @@ function Navbar() {
 
                   <li>
                     <Link to="/member/profile" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-person-circle text-primary fs-6"></i>
+                      <i className="bi bi-person-circle text-primary fs-6 me-3"></i>
                       <span>My Profile</span>
                     </Link>
                   </li>
 
                   <li>
                     <Link to="/member/profile/borrowing-history" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-clock-history text-info fs-6"></i>
+                      <i className="bi bi-clock-history text-info fs-6 me-3"></i>
                       <span>Borrowing History</span>
                     </Link>
                   </li>
 
                   <li>
                     <Link to="/member/profile/due-date" className="dropdown-item py-2 fw-medium d-flex align-items-center gap-2.5 rounded-3">
-                      <i className="bi bi-calendar-event text-warning fs-6"></i>
+                      <i className="bi bi-calendar-event text-warning fs-6 me-3"></i>
                       <span>Due Date</span>
                     </Link>
                   </li>
@@ -336,7 +345,7 @@ function Navbar() {
                       className="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2.5 rounded-3 w-100 text-start bg-transparent border-0"
                       onClick={handleLogout}
                     >
-                      <i className="bi bi-box-arrow-right fs-6"></i>
+                      <i className="bi bi-box-arrow-right fs-6 me-3"></i>
                       <span>Logout</span>
                     </button>
                   </li>

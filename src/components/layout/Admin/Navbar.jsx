@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import useUser from "../../../hook/useUsers";
 import useUserAuth from "../../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
-import { getAvatarUrl } from "../../../utils/avatar";
+import { getAvatarUrl, handleAvatarError } from "../../../utils/avatar";
 
 function Navbar() {
   const [notifications] = useState(3);
@@ -61,14 +61,29 @@ function Navbar() {
 
       <div className="container-fluid p-0 d-flex justify-content-between align-items-center">
         {/* LEFT */}
-        <div className="d-flex align-items-center gap-2">
-          <i className="bi bi-grid-1x2-fill text-info fs-5"></i>
-          <h5
-            className="mb-0 fw-semibold"
-            style={{ color: "#f8fafc", fontSize: "17px", letterSpacing: "0.3px" }}
+        <div className="d-flex align-items-center gap-3">
+          <div
+            className="rounded-3 d-flex align-items-center justify-content-center shadow-xs"
+            style={{
+              width: "42px",
+              height: "42px",
+              padding: "10px",
+              background: "rgba(6, 182, 212, 0.15)",
+              color: "#06b6d4",
+              border: "1px solid rgba(6, 182, 212, 0.28)",
+              boxShadow: "0 2px 10px rgba(6, 182, 212, 0.15)",
+            }}
           >
-            Library Dashboard
-          </h5>
+            <i className="bi bi-grid-1x2-fill fs-5"></i>
+          </div>
+          <div>
+            <h5
+              className="mb-0 fw-semibold"
+              style={{ color: "#f8fafc", fontSize: "16.5px", letterSpacing: "0.3px" }}
+            >
+              Library Dashboard
+            </h5>
+          </div>
         </div>
 
         {/* RIGHT */}
@@ -119,6 +134,7 @@ function Navbar() {
                   objectFit: "cover",
                   border: "2px solid rgba(255,255,255,0.1)",
                 }}
+                onError={(e) => handleAvatarError(e, userProfile?.full_name || "Admin")}
               />
 
               {/* USER INFO */}

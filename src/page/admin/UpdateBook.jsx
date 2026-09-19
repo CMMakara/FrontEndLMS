@@ -325,7 +325,7 @@ function UpdateBook() {
             </div>
 
             {/* ── THREE SECTION COLUMNS ── */}
-            <div className="row g-3 mb-3">
+            <div className="row gy-3 mb-3">
 
               {/* Relations */}
               <div className="col-lg-4">

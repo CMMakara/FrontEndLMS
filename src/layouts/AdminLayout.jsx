@@ -15,7 +15,7 @@ function AdminLayout() {
       <div className="flex-grow-1 d-flex flex-column bg-light" style={{ transition: "all 0.3s ease" }}>
         <Navbar />
 
-        <main className="p-3 flex-grow-1 overflow-auto">
+        <main className="p-3 p-md-4 flex-grow-1 overflow-auto">
           <Outlet />
         </main>
       </div>

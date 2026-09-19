@@ -39,19 +39,37 @@ function Book() {
       }}
     >
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="fw-bold">
-            <i className="bi bi-book me-2"></i>
-            Book Dashboard
-          </h2>
-          <p className="text-muted">Overview of your library system</p>
-        </div>
+      <div className="card border-0 rounded-4 p-4 mb-4 bg-white shadow-sm" style={{ border: "1px solid #e2e8f0" }}>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3.5">
+            <div
+              className="rounded-4 d-flex align-items-center justify-content-center p-3 shadow flex-shrink-0"
+              style={{
+                width: "60px",
+                height: "60px",
+                padding: "14px",
+                background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
+                color: "#ffffff",
+                boxShadow: "0 8px 22px rgba(79, 70, 229, 0.25)",
+              }}
+            >
+              <i className="bi bi-book fs-2"></i>
+            </div>
+            <div>
+              <h2 className="fw-bold mb-0 ms-3" style={{ letterSpacing: "-0.5px" }}>Book Dashboard</h2>
+              <p className="text-muted small mb-0 ms-3">Overview of catalog holdings, authors, and circulation status</p>
+            </div>
+          </div>
 
-        <button className="btn btn-dark px-4" onClick={() => navigate('/admin/books/create')}>
-          <i className="bi bi-plus-circle-fill me-2 text-white"></i>
-          Add Book
-        </button>
+          <button
+            className="btn text-white px-4 py-2.5 rounded-pill shadow-sm d-inline-flex align-items-center gap-2 fw-semibold"
+            style={{ background: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)", border: "none" }}
+            onClick={() => navigate('/admin/books/create')}
+          >
+            <i className="bi bi-plus-lg"></i>
+            Add Book
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

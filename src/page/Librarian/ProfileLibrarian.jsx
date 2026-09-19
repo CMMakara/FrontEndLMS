@@ -3,6 +3,7 @@ import useUser from '../../hook/useUsers'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import Select from '../../components/ui/Select'
+import { getAvatarUrl, isDefaultAvatar, handleAvatarError } from '../../utils/avatar'
 
 function ProfileLibrarianV2() {
   const fileInputRef = useRef(null)
@@ -18,8 +19,7 @@ function ProfileLibrarianV2() {
     address: "",
   });
   const { userProfile, updateProfile, getUserProfile, updateProfileImage , deleteProfileImage } = useUser()
-  const baseUrl = import.meta.env.VITE_API_URL || "";
-  const imageSource = photo || (userProfile?.profile_image ? `${baseUrl}${userProfile.profile_image}` : 'https://via.placeholder.com/150');
+  const imageSource = photo || getAvatarUrl(userProfile?.profile_image, userProfile?.full_name || "Librarian");
 
   const openModal = () => {
     setIsModal(true);
@@ -108,7 +108,11 @@ function ProfileLibrarianV2() {
             <div className="d-flex align-items-end justify-content-between mb-2">
               <div className="avatar-wrap">
                 {/* Bound the dynamic image source here */}
-                <img src={imageSource} alt="Profile" />
+                <img
+                  src={imageSource}
+                  alt="Profile"
+                  onError={(e) => handleAvatarError(e, userProfile?.full_name || "Librarian")}
+                />
                 <div className="avatar-btns">
                   <button
                     className="av-btn av-change"
@@ -117,13 +121,15 @@ function ProfileLibrarianV2() {
                   >
                     <i className="bi bi-camera-fill" />
                   </button>
-                  <button
-                    className="av-btn av-delete"
-                    title="Delete photo"
-                    onClick={handleDeletePhoto}
-                  >
-                    <i className="bi bi-trash3-fill" />
-                  </button>
+                  {!isDefaultAvatar(userProfile?.profile_image) && (
+                    <button
+                      className="av-btn av-delete"
+                      title="Delete photo"
+                      onClick={handleDeletePhoto}
+                    >
+                      <i className="bi bi-trash3-fill" />
+                    </button>
+                  )}
                 </div>
                 <input
                   ref={fileInputRef}

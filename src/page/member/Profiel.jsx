@@ -7,7 +7,7 @@ import useBorrow from "../../hook/useBorrow";
 import Modal from "../../components/ui/Modal";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
-import { getAvatarUrl } from "../../utils/avatar";
+import { getAvatarUrl, isDefaultAvatar, handleAvatarError } from "../../utils/avatar";
 import "../../assets/profile.css";
 
 const NAV_ITEMS = [
@@ -42,10 +42,7 @@ function Sidebar() {
               src={avatarSrc}
               alt={userProfile?.full_name || "User"}
               className="sidebar-avatar"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.full_name || "User")}&background=4f46e5&color=fff&bold=true`;
-              }}
+              onError={(e) => handleAvatarError(e, userProfile?.full_name || "User")}
             />
             <span className="sidebar-status-dot" title="Account Active"></span>
           </div>
@@ -240,10 +237,7 @@ function ProfileContent() {
                 src={avatarSrc}
                 alt={userData.full_name}
                 className="profile-main-avatar"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.full_name || "User")}&background=4f46e5&color=fff&bold=true`;
-                }}
+                onError={(e) => handleAvatarError(e, userData?.full_name || "User")}
               />
 
               {uploadingImage && (
@@ -263,7 +257,7 @@ function ProfileContent() {
               </button>
 
               {/* Delete photo button */}
-              {userData.profile_image && (
+              {!isDefaultAvatar(userData.profile_image) && (
                 <button
                   type="button"
                   className="avatar-delete-badge"
@@ -652,11 +646,7 @@ function BorrowingHistoryContent() {
         const name = row.member_name || userProfile?.full_name || 'Member';
         const code = row.member_code || (userProfile?.user_id ? `#${userProfile.user_id}` : '');
         const imagePath = row.profile_image || userProfile?.profile_image;
-        const imgSrc = imagePath
-          ? (imagePath.startsWith('http')
-              ? imagePath
-              : `${import.meta.env.VITE_API_URL}${imagePath.replace('/uploads/', '').replace(/^\/+/, '')}`)
-          : `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
+        const imgSrc = getAvatarUrl(imagePath, name);
 
         return (
           <div className="d-flex align-items-center gap-2">
@@ -666,10 +656,7 @@ function BorrowingHistoryContent() {
               width={40}
               height={40}
               className="rounded-circle object-fit-cover shadow-sm"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `${import.meta.env.VITE_API_URL}profiles/default-profile.png`;
-              }}
+              onError={(e) => handleAvatarError(e, name)}
             />
 
             <div>
@@ -793,27 +780,6 @@ function BorrowingHistoryContent() {
         <div>
           <h4 className="fw-bold text-dark mb-1" style={{ letterSpacing: "-0.02em" }}>Borrowing History</h4>
           <small className="text-muted">Track all your past and current book borrowings</small>
-        </div>
-
-        <div className="status-pill-group">
-          {[
-            { label: "All", value: "All" },
-            { label: "Borrowed", value: "borrowed" },
-            { label: "Overdue", value: "overdue" },
-            { label: "Returned", value: "returned" },
-          ].map((item) => (
-            <button
-              key={item.value}
-              type="button"
-              className={`status-pill-btn ${statusFilter === item.value ? "active" : ""}`}
-              onClick={() => {
-                setStatusFilter(item.value);
-                setCurrentPage(1);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
         </div>
       </div>
 

@@ -1,10 +1,20 @@
-import { forgotPasswordAPI, loginUser, logoutUserAPI, registerAPI, resendOtpAPI, verifyOtpAPI } from "../services/authService";
+import {
+  forgotPasswordAPI,
+  loginUser,
+  logoutUserAPI,
+  registerAPI,
+  resendOtpAPI,
+  verifyOtpAPI,
+  verifyResetOtpAPI,
+  resetPasswordAPI
+} from "../services/authService";
 import { data, useNavigate } from "react-router-dom";
 import { setAuth } from "../utils/auth";
 import { validateLogin } from "../validations/LoginSchema";
 import { useState } from "react";
 import { useToast } from '../context/ToastContext.jsx'
 import { broadcastUserProfile } from "./useUsers";
+
 
 const useUserAuth = () => {
   const navigate = useNavigate();
@@ -147,21 +157,71 @@ const useUserAuth = () => {
     }
   };
 
-  const forgotPassword = async (email) =>{
+  const forgotPassword = async (email) => {
     try {
-      return await forgotPasswordAPI(email);
+      const res = await forgotPasswordAPI(email);
+      if (res && res.result === false) {
+        showToast(res?.msg || res?.message || res?.data || "Failed to send reset code", "error");
+        return false;
+      }
+      showToast(res?.msg || res?.message || "Reset verification code sent to your email", "success");
+      return res || true;
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      showToast(
+        error?.response?.data?.msg ||
+        error?.response?.data?.message ||
+        error?.response?.data?.data ||
+        "Failed to send reset code",
+        "error"
+      );
+      return false;
     }
-  }
-   const resetPassword  = async (data) =>{
-    try {
-      return  await forgotPasswordAPI(data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  };
 
+  const verifyResetOtp = async (email, token) => {
+    try {
+      const res = await verifyResetOtpAPI(email, token);
+      if (res && res.result === false) {
+        showToast(res?.msg || res?.message || res?.data || "Invalid OTP code", "error");
+        return false;
+      }
+      showToast(res?.msg || res?.message || "OTP verified successfully", "success");
+      return res || true;
+    } catch (error) {
+      console.log(error);
+      showToast(
+        error?.response?.data?.msg ||
+        error?.response?.data?.message ||
+        error?.response?.data?.data ||
+        "OTP verification failed",
+        "error"
+      );
+      return false;
+    }
+  };
+
+  const resetPassword = async (payload) => {
+    try {
+      const res = await resetPasswordAPI(payload);
+      if (res && res.result === false) {
+        showToast(res?.msg || res?.message || res?.data || "Failed to reset password", "error");
+        return false;
+      }
+      showToast(res?.msg || res?.message || "Password has been successfully updated!", "success");
+      return res || true;
+    } catch (error) {
+      console.log(error);
+      showToast(
+        error?.response?.data?.msg ||
+        error?.response?.data?.message ||
+        error?.response?.data?.data ||
+        "Failed to reset password",
+        "error"
+      );
+      return false;
+    }
+  };
 
   return {
     handleLogin,
@@ -173,8 +233,9 @@ const useUserAuth = () => {
     verifyOtp,
     resendOtp,
     forgotPassword,
+    verifyResetOtp,
     resetPassword
   };
 };
 
-export default useUserAuth;
+export default useUserAuth;
